@@ -55,7 +55,7 @@ const Banner = () => {
 
   return (
     <section className="bg-[#F4F4F2] text-[#1B1F16]">
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 py-14 lg:grid-cols-[1.05fr_0.95fr]">
         {/* Left: message + search */}
         <motion.div variants={container} initial="hidden" animate="show">
           <motion.p
@@ -173,12 +173,12 @@ const Banner = () => {
               fill
               priority
               sizes="(min-width: 1024px) 45vw, 100vw"
-              className="object-contain object-bottom"
+              className="object-contain object-center"
             />
           </div>
 
           {/* The memorable element: a rental tag that swings in once */}
-          <motion.div
+          {/* <motion.div
             initial={{
               opacity: 0,
               rotate: reduce ? -3 : -14,
@@ -192,7 +192,7 @@ const Banner = () => {
               delay: 0.9,
             }}
             style={{ transformOrigin: "top left" }}
-            className="absolute -left-3 bottom-8 w-56 rounded-2xl bg-[#7CB518] p-4 text-[#1B1F16] shadow-xl sm:-left-8"
+            className="absolute -left-3 bottom-0 w-56 rounded-2xl bg-[#7CB518] p-4 text-[#1B1F16] shadow-xl sm:-left-8"
           >
             <p className="text-xs font-semibold">Excavator 20T</p>
             <p className="mt-1 text-3xl font-extrabold leading-none">
@@ -204,7 +204,7 @@ const Banner = () => {
                 Book
               </span>
             </div>
-          </motion.div>
+          </motion.div> */}
         </motion.div>
       </div>
     </section>
