@@ -55,12 +55,17 @@ const Banner = () => {
 
   return (
     <section className="bg-[#F4F4F2] text-[#1B1F16]">
-      <div className="mx-auto grid max-w-7xl items-center gap-12 py-14 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 lg:grid-cols-[1.05fr_0.95fr] xl:px-0">
         {/* Left: message + search */}
-        <motion.div variants={container} initial="hidden" animate="show">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="flex flex-col items-center text-center md:items-start md:text-left"
+        >
           <motion.p
             variants={item}
-            className="mb-4 flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.18em] text-[#3F6212]"
+            className="mb-4 flex items-center justify-center gap-2.5 text-xs font-bold uppercase tracking-[0.18em] text-[#3F6212] md:justify-start"
           >
             <span>Find It</span>
             <span
@@ -77,14 +82,14 @@ const Banner = () => {
 
           <motion.h1
             variants={item}
-            className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[56px]"
+            className="w-full max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[56px]"
           >
             Everything You Need, Ready to Rent.
           </motion.h1>
 
           <motion.p
             variants={item}
-            className="mt-5 max-w-lg text-base leading-relaxed text-[#1B1F16]/70 sm:text-md"
+            className="mt-5 w-full max-w-lg text-base leading-relaxed text-[#1B1F16]/70 sm:text-md"
           >
             Discover and rent quality tools, machinery, and equipment for every
             project. Simple booking, flexible rentals, and reliable service.
@@ -94,7 +99,7 @@ const Banner = () => {
           <motion.form
             variants={item}
             onSubmit={onSearch}
-            className="mt-8 flex max-w-2xl flex-col gap-2 rounded-2xl border border-[#1B1F16]/10 bg-white p-2 shadow-sm sm:flex-row sm:items-center"
+            className="mt-8 flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-[#1B1F16]/10 bg-white p-2 shadow-sm sm:flex-row sm:items-center"
           >
             <label className="flex flex-1 items-center gap-2 px-3 py-2">
               <Search className="h-5 w-5 shrink-0 text-[#3F6212]" aria-hidden />
@@ -127,7 +132,7 @@ const Banner = () => {
 
           <motion.div
             variants={item}
-            className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm"
+            className="mt-5 flex w-full flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm md:justify-start"
           >
             <Link
               href="/all-equipment"
@@ -145,12 +150,12 @@ const Banner = () => {
 
           <motion.ul
             variants={item}
-            className="mt-10 grid gap-3 sm:grid-cols-3"
+            className="mt-10 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-3"
           >
             {trust.map(({ icon: Icon, text }) => (
               <li
                 key={text}
-                className="flex items-center gap-2 text-xs font-medium text-[#1B1F16]/80"
+                className="flex items-center gap-2 text-left text-xs font-medium text-[#1B1F16]/80"
               >
                 <Icon className="h-5 w-5 shrink-0 text-[#3F6212]" aria-hidden />
                 {text}
@@ -164,9 +169,9 @@ const Banner = () => {
           initial={{ opacity: 0, scale: reduce ? 1 : 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          className="relative"
+          className="relative w-full"
         >
-          <div className="relative aspect-[4/3] sm:aspect-[5/4] lg:aspect-[5/4]">
+          <div className="relative aspect-[4/3] w-full sm:aspect-[5/4]">
             <Image
               src="/bannarImg.png"
               alt="Heavy equipment ready to rent"
