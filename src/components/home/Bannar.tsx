@@ -4,25 +4,19 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  fadeScaleVariants,
+  fadeUpVariants,
+  staggerVariants,
+} from "../utils/animation";
 import {
   Search,
   MapPin,
   ShieldCheck,
   CalendarClock,
   CreditCard,
-  BadgeCheck,
-  SearchAlert,
 } from "lucide-react";
-
-/**
- * EasyRent hero banner
- * Needs: npm i framer-motion lucide-react
- * Image: put a photo at /public/images/hero-equipment.jpg
- *        (search Unsplash / Pexels for "excavator", "construction site", "heavy equipment")
- * Colors are written as Tailwind arbitrary values so no config change is needed.
- *   bg #F4F4F2 | ink #1B1F16 | lime #7CB518 | deep green #3F6212
- */
 
 const trust = [
   { icon: ShieldCheck, text: "Verified equipment owners" },
@@ -44,15 +38,8 @@ const Banner = () => {
     router.push(`/all-equipment?${params.toString()}`); // change to your route
   };
 
-  // One orchestrated entrance for the whole banner
-  const container: Variants = {
-    hidden: {},
-    show: { transition: { staggerChildren: reduce ? 0 : 0.12 } },
-  };
-  const item: Variants = {
-    hidden: { opacity: 0, y: reduce ? 0 : 24 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-  };
+  const container = staggerVariants(reduce, 0.12, "show");
+  const item = fadeUpVariants(reduce, 24, 0.6, "show");
 
   return (
     <section className="bg-[#F4F4F2] text-[#1B1F16]">
@@ -168,9 +155,9 @@ const Banner = () => {
 
         {/* Right: image + rental tag */}
         <motion.div
-          initial={{ opacity: 0, scale: reduce ? 1 : 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          variants={fadeScaleVariants(reduce, 0.96, 0.8, 0.2)}
+          initial="hidden"
+          animate="visible"
           className="relative w-full"
         >
           <div className="relative aspect-[4/3] w-full sm:aspect-[5/4]">
