@@ -76,7 +76,7 @@ const Banner = () => {
           </motion.p>
 
           {/* Search */}
-          <motion.form
+          {/* <motion.form
             variants={item}
             onSubmit={onSearch}
             className="mt-8 flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-[#1B1F16]/10 bg-white p-2 shadow-sm sm:flex-row sm:items-center"
@@ -95,6 +95,32 @@ const Banner = () => {
             <button
               type="submit"
               className="rounded-xl bg-[#7CB518] px-6 py-3 text-sm font-bold text-white cursor-pointer transition hover:bg-[#6aa00f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212]"
+            >
+              Search
+            </button>
+          </motion.form> */}
+          <motion.form
+            variants={item}
+            onSubmit={onSearch}
+            className="mt-6 flex w-full max-w-xl flex-row items-center gap-1.5 rounded-2xl border border-[#1B1F16]/10 bg-white p-1.5 shadow-sm sm:mt-8 sm:gap-2 sm:p-2"
+          >
+            <label className="flex min-w-0 flex-1 items-center gap-2 pl-2.5 pr-1 py-1.5 sm:px-3 sm:py-2">
+              <Search
+                className="size-4 shrink-0 text-[#3F6212] sm:size-5"
+                aria-hidden
+              />
+              <span className="sr-only">Equipment name</span>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="What do you need? e.g. excavator"
+                className="w-full min-w-0 truncate bg-transparent text-xs outline-none placeholder:text-[#1B1F16]/45 sm:text-sm"
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="shrink-0 cursor-pointer rounded-xl bg-[#7CB518] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#6aa00f] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212] sm:px-6 sm:py-3 sm:text-sm"
             >
               Search
             </button>
