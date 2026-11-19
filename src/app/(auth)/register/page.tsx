@@ -1,14 +1,17 @@
-"use client"
+"use client";
 
-import { useCallback, useState, type FormEvent } from "react"
-import Link from "next/link"
-import { motion, useReducedMotion } from "framer-motion"
-import { fadeUpVariants } from "@/components/utils/animation"
-import { Eye, EyeOff, Mail, Lock, User, Check, X } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { motion, useReducedMotion } from "framer-motion";
+import { fadeUpVariants } from "@/components/utils/animation";
+import { Eye, EyeOff, Mail, Lock, User, Check, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -16,83 +19,106 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import Image from "next/image"
-
-type RegisterFormData = {
-  name: string
-  email: string
-  password: string
-  confirmPassword: string
-}
+} from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 
 const RegisterPage = () => {
-  const reduceMotion = useReducedMotion()
-  const [formData, setFormData] = useState<RegisterFormData>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const router = useRouter();
+  const reduceMotion = useReducedMotion();
+  const [password, setPassword] = useState(""); 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [pending, setPending] = useState<"email" | "google" | null>(null);
 
-  const handleChange = useCallback(
-    (key: keyof RegisterFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({ ...prev, [key]: e.target.value }))
-    },
-    []
-  )
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPending("email");
 
-  const validatePassword = useCallback((password: string): boolean => {
-    const hasUpperCase = /[A-Z]/.test(password)
-    const hasLowerCase = /[a-z]/.test(password)
-    const hasMinLength = password.length >= 6
+    const formData = new FormData(e.currentTarget);
 
-    if (!hasUpperCase || !hasLowerCase || !hasMinLength) {
-      alert(
-        "Password must contain at least one uppercase letter, one lowercase letter, and be at least 6 characters long."
-      )
-      console.log("[Register] Password validation failed:", {
-        hasUpperCase,
-        hasLowerCase,
-        hasMinLength,
-        length: password.length,
-      })
-      return false
+    if (!formData.get("image")) {
+      formData.set("image", "/girlReview.jpg");
     }
 
-    return true
-  }, [])
+    const password = String(formData.get("password") ?? "");
+    const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-  const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
+    if (password !== confirmPassword) {
+      toast.error("Password and confirm password do not match.");
+      setPending(null);
+      return;
+    }
 
-      const { name, email, password, confirmPassword } = formData
+    const unmetRequirements: string[] = [];
 
-      if (!name || !email || !password || !confirmPassword) {
-        alert("Please fill in all fields.")
-        console.log("[Register] Registration failed: All fields are required")
-        return
+    if (!/[A-Z]/.test(password)) {
+      unmetRequirements.push("At least one uppercase letter");
+    }
+    if (!/[a-z]/.test(password)) {
+      unmetRequirements.push("At least one lowercase letter");
+    }
+    if (password.length < 6) {
+      unmetRequirements.push("At least 6 characters");
+    }
+
+    if (unmetRequirements.length > 0) {
+      toast.error(
+        `Password requirements not met:\n\n${unmetRequirements.join("\n")}`,
+      );
+      setPending(null);
+      return;
+    }
+
+    const user = {
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      image: String(formData.get("image") ?? ""),
+      password,
+    };
+
+    let accountCreated = false;
+    try {
+      const { data, error } = await authClient.signUp.email({
+        ...user,
+      });
+
+      if (data) {
+        toast.success("Your account has been created.");
+        accountCreated = true;
+      } else {
+        toast.error(error?.message || "Unable to create your account.");
       }
+    } catch {
+      toast.error("Unable to create your account right now. Please try again.");
+    } finally {
+      setPending(null);
+    }
 
-      if (password !== confirmPassword) {
-        alert("Password and confirm password do not match.")
-        console.log("[Register] Registration failed: Passwords do not match")
-        return
-      }
+    if (accountCreated) {
+      router.push("/");
+      router.refresh();
+    }
+  };
 
-      if (!validatePassword(password)) {
-        return
-      }
+  // async function handleGoogleSignIn() {
+  //   setPending("google");
 
-      const userData = { name, email, password }
-      console.log("[Register] Registration successful. Stored user data:", userData)
+  //   try {
+  //     const { error } = await authClient.signIn.social({
+  //       provider: "google",
+  //     });
 
-      alert("Account created successfully!")
-    },
-    [formData, validatePassword]
-  )
+  //     if (error) {
+  //       toast.error(error.message || "Unable to continue with Google.");
+  //     } else {
+  //       toast.success("Google Signin Successful.");
+  //     }
+  //   } catch {
+  //     toast.error("Unable to continue with Google right now. Please try again.");
+  //   } finally {
+  //     setPending(null);
+  //   }
+  // }
 
   return (
     <div className="min-h-[calc(100vh-rem(200px))] flex items-center justify-center bg-[#F4F4F3] px-4 py-12">
@@ -114,17 +140,31 @@ const RegisterPage = () => {
           </CardHeader>
 
           <CardContent className="">
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSignUp} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
+                  name="name"
                   type="text"
                   autoComplete="name"
                   placeholder="John Doe"
-                  value={formData.name}
-                  onChange={handleChange("name")}
+                  required
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="image">Profile Image URL</Label>
+                <Input
+                  id="image"
+                  name="image"
+                  type="url"
+                  autoComplete="url"
+                  placeholder="https://unsplash.com/..."
+                />
+                <p className="text-xs text-muted-foreground">
+                  Optional: Leave empty for default avatar
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -136,12 +176,12 @@ const RegisterPage = () => {
                   />
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     autoComplete="email"
                     placeholder="you@example.com"
                     className="pl-10"
-                    value={formData.email}
-                    onChange={handleChange("email")}
+                    required
                   />
                 </div>
               </div>
@@ -159,10 +199,11 @@ const RegisterPage = () => {
                   />
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    value={formData.password}
-                    onChange={handleChange("password")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••"
                     autoComplete="new-password"
                     className="pl-11 pr-11"
@@ -170,18 +211,33 @@ const RegisterPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-[#1B1F16]/60 transition hover:text-[#1B1F16]"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
 
                 <ul className="grid gap-1.5 pt-2 sm:grid-cols-3">
                   {[
-                    { label: "One uppercase letter", ok: /[A-Z]/.test(formData.password) },
-                    { label: "One lowercase letter", ok: /[a-z]/.test(formData.password) },
-                    { label: "At least 6 characters", ok: formData.password.length >= 6 },
+                    {
+                      label: "One uppercase letter",
+                      ok: /[A-Z]/.test(password),
+                    },
+                    {
+                      label: "One lowercase letter",
+                      ok: /[a-z]/.test(password),
+                    },
+                    {
+                      label: "At least 6 characters",
+                      ok: password.length >= 6,
+                    },
                   ].map((r) => (
                     <li
                       key={r.label}
@@ -191,10 +247,16 @@ const RegisterPage = () => {
                     >
                       <span
                         className={`flex h-4 w-4 items-center justify-center rounded-full ${
-                          r.ok ? "bg-[#7CB518] text-[#1B1F16]" : "bg-[#1B1F16]/10"
+                          r.ok
+                            ? "bg-[#7CB518] text-[#1B1F16]"
+                            : "bg-[#1B1F16]/10"
                         }`}
                       >
-                        {r.ok ? <Check className="h-3 w-3" aria-hidden /> : <X className="h-3 w-3" aria-hidden />}
+                        {r.ok ? (
+                          <Check className="h-3 w-3" aria-hidden />
+                        ) : (
+                          <X className="h-3 w-3" aria-hidden />
+                        )}
                       </span>
                       {r.label}
                     </li>
@@ -213,17 +275,19 @@ const RegisterPage = () => {
                   />
                   <Input
                     id="confirmPassword"
+                    name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     autoComplete="new-password"
                     placeholder="••••••"
                     className="pl-10 pr-10"
-                    value={formData.confirmPassword}
-                    onChange={handleChange("confirmPassword")}
+                    required
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
                   >
                     {showConfirmPassword ? (
@@ -237,22 +301,18 @@ const RegisterPage = () => {
 
               <Button
                 type="submit"
+                disabled={pending !== null}
                 className={`w-full h-10 bg-[#7CB518] cursor-pointer text-white font-semibold hover:bg-[#679b16] transition-colors`}
               >
-                Create Account
+                {pending === "email" ? "Creating account..." : "Create Account"}
               </Button>
 
               <div className="relative">
-                <div
-                  className="absolute inset-0 flex items-center"
-                  aria-hidden
-                >
+                <div className="absolute inset-0 flex items-center" aria-hidden>
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                  <span className="bg-card px-3 text-muted-foreground">
-                    Or
-                  </span>
+                  <span className="bg-card px-3 text-muted-foreground">Or</span>
                 </div>
               </div>
 
@@ -260,12 +320,11 @@ const RegisterPage = () => {
                 type="button"
                 variant="outline"
                 className="w-full bg-black text-white h-10"
-                onClick={() => {
-                  console.log("[Register] Google sign-in clicked (Better Auth to be implemented)")
-                }}
+                // onClick={handleGoogleSignIn}
+                disabled={pending !== null}
               >
-                <Image src="/google.png" alt="google" width={14} height={14}/>
-                Register with Google
+                <Image src="/google.png" alt="google" width={14} height={14} />
+                {pending === "google" ? "Connecting..." : "Register with Google"}
               </Button>
             </form>
           </CardContent>
@@ -284,7 +343,7 @@ const RegisterPage = () => {
         </Card>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default RegisterPage
+export default RegisterPage;

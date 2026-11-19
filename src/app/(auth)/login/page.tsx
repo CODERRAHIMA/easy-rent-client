@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
-import { useCallback, useState, type FormEvent } from "react"
-import Link from "next/link"
-import { motion, useReducedMotion } from "framer-motion"
-import { fadeUpVariants } from "@/components/utils/animation"
-import { Eye, EyeOff, Mail, Lock, User } from "lucide-react"
-import { FaGoogle } from "react-icons/fa"
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { motion, useReducedMotion } from "framer-motion";
+import { fadeUpVariants } from "@/components/utils/animation";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -17,51 +19,74 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import Image from "next/image"
-
-const BRAND_GREEN = "#7CB518"
-const BRAND_GREEN_HOVER = "#679b16"
-
-type LoginFormData = {
-  email: string
-  password: string
-}
+} from "@/components/ui/card";
+import { authClient, signIn } from "@/lib/auth-client";
 
 const LoginPage = () => {
-  const reduceMotion = useReducedMotion()
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter();
+  const reduceMotion = useReducedMotion();
+  const [showPassword, setShowPassword] = useState(false);
+  const [pending, setPending] = useState<"email" | "google" | null>(null);
 
-  const handleChange = useCallback(
-    (key: keyof LoginFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({ ...prev, [key]: e.target.value }))
-    },
-    []
-  )
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPending("email");
 
-  const handleSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
+    const formData = new FormData(e.currentTarget);
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
 
-      const { email, password } = formData
+    if (!email || !password) {
+      toast.error("Please fill in all fields.");
+      setPending(null);
+      return;
+    }
 
-      if (!email || !password) {
-        alert("Please fill in all fields.")
-        console.log("[Login] Login failed: All fields are required")
-        return
+    let signedIn = false;
+    try {
+      const { data, error } = await signIn.email({
+        email,
+        password,
+        rememberMe: true,
+      });
+
+      if (data) {
+        toast.success("Welcome back!");
+        signedIn = true;
+      } else {
+        toast.error(error?.message || "Invalid email or password.");
       }
+    } catch {
+      toast.error("Unable to sign you in right now. Please try again.");
+    } finally {
+      setPending(null);
+    }
 
-      // Store data locally so it can be sent to Better Auth later
-      console.log("[Login] Login attempted with:", { email, password })
+    if (signedIn) {
+      router.push("/");
+      router.refresh();
+    }
+  };
 
-      alert("Login successful!")
-    },
-    [formData]
-  )
+  // async function handleGoogleSignIn() {
+  //   setPending("google");
+
+  //   try {
+  //     const { error } = await authClient.signIn.social({
+  //       provider: "google",
+  //     });
+
+  //     if (error) {
+  //       toast.error(error.message || "Unable to continue with Google.");
+  //     } else {
+  //       toast.success("Google Signin Successful.");
+  //     }
+  //   } catch {
+  //     toast.error("Unable to continue with Google right now. Please try again.");
+  //   } finally {
+  //     setPending(null);
+  //   }
+  // }
 
   return (
     <div className="min-h-[calc(100vh-rem(200px))] flex items-center justify-center bg-[#F4F4F3] px-4 py-12">
@@ -83,7 +108,7 @@ const LoginPage = () => {
           </CardHeader>
 
           <CardContent className="">
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSignIn} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
@@ -93,12 +118,12 @@ const LoginPage = () => {
                   />
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     autoComplete="email"
                     placeholder="you@example.com"
                     className="pl-10"
-                    value={formData.email}
-                    onChange={handleChange("email")}
+                    required
                   />
                 </div>
               </div>
@@ -114,42 +139,44 @@ const LoginPage = () => {
                   />
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     placeholder="••••••"
                     className="pl-10 pr-10"
-                    value={formData.password}
-                    onChange={handleChange("password")}
+                    required
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
-                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    {showPassword ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
                   </button>
                 </div>
               </div>
 
               <Button
                 type="submit"
+                disabled={pending !== null}
                 className={`w-full h-10 bg-[#7CB518] text-white font-semibold hover:bg-[#679b16] transition-colors`}
               >
-                Sign in
+                {pending === "email" ? "Signing in..." : "Sign in"}
               </Button>
 
               <div className="relative">
-                <div
-                  className="absolute inset-0 flex items-center"
-                  aria-hidden
-                >
+                <div className="absolute inset-0 flex items-center" aria-hidden>
                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                  <span className="bg-card px-3 text-muted-foreground">
-                    Or
-                  </span>
+                  <span className="bg-card px-3 text-muted-foreground">Or</span>
                 </div>
               </div>
 
@@ -157,12 +184,11 @@ const LoginPage = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-10 bg-black text-white"
-                onClick={() => {
-                  console.log("[Login] Google sign-in clicked (Better Auth to be implemented)")
-                }}
+                // onClick={handleGoogleSignIn}
+                disabled={pending !== null}
               >
-                <Image src="/google.png" alt="google" width={14} height={14}/>
-                Continue with Google
+                <Image src="/google.png" alt="google" width={14} height={14} />
+                {pending === "google" ? "Connecting..." : "Continue with Google"}
               </Button>
             </form>
           </CardContent>
@@ -181,7 +207,7 @@ const LoginPage = () => {
         </Card>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;
