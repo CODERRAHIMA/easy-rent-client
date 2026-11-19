@@ -12,6 +12,7 @@ import {
   CalendarClock,
   CreditCard,
   BadgeCheck,
+  SearchAlert,
 } from "lucide-react";
 
 /**
@@ -124,9 +125,10 @@ const Banner = () => {
             </label>
             <button
               type="submit"
-              className="rounded-xl bg-[#7CB518] px-6 py-3 text-sm font-bold text-white cursor-pointer transition hover:bg-[#6aa00f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212]"
+              className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#86c21d] to-[#7CB518] px-6 py-3 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white/20 transition-all duration-200 hover:from-[#7CB518] hover:to-[#699c12] hover:shadow-md hover:shadow-[#7CB518]/25 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212] cursor-pointer"
             >
-              Search
+              <Search className="size-4 stroke-[2.5] transition-transform duration-200 group-hover:scale-110" />
+              <span>Search</span>
             </button>
           </motion.form>
 

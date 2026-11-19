@@ -1,0 +1,141 @@
+import Link from "next/link";
+import {
+  AudioLines,
+  Construction,
+  Drill,
+  PartyPopper,
+  SprayCan,
+  Tractor,
+} from "lucide-react";
+
+const categories = [
+  {
+    name: "Agriculture Equipment",
+    slug: "agriculture-equipment",
+    description: "Tractors, harvesters, and more",
+    itemCount: 12,
+    icon: Tractor,
+    iconColor: "text-[#557A24]",
+    iconBackground: "bg-[#EEF4E5]",
+  },
+  {
+    name: "Cleaning Equipment",
+    slug: "cleaning-equipment",
+    description: "Pressure washers and floor care",
+    itemCount: 8,
+    icon: SprayCan,
+    iconColor: "text-[#47736B]",
+    iconBackground: "bg-[#EAF3F1]",
+  },
+  {
+    name: "Construction Equipment",
+    slug: "construction-equipment",
+    description: "Heavy machinery and excavators",
+    itemCount: 24,
+    icon: Construction,
+    iconColor: "text-[#A36B22]",
+    iconBackground: "bg-[#F8F0E4]",
+  },
+  {
+    name: "Electronics",
+    slug: "electronics",
+    description: "Audio, monitors, and essentials",
+    itemCount: 16,
+    icon: AudioLines,
+    iconColor: "text-[#5966A3]",
+    iconBackground: "bg-[#EEF0FA]",
+  },
+  {
+    name: "Event Equipment",
+    slug: "event-equipment",
+    description: "Stages, sound, and outdoor gear",
+    itemCount: 10,
+    icon: PartyPopper,
+    iconColor: "text-[#A45768]",
+    iconBackground: "bg-[#F8ECEF]",
+  },
+  {
+    name: "Power Tools",
+    slug: "power-tools",
+    description: "Drills, saws, and workshop tools",
+    itemCount: 18,
+    icon: Drill,
+    iconColor: "text-[#6B6757]",
+    iconBackground: "bg-[#F1F0EA]",
+  },
+];
+
+const Categories = () => {
+  return (
+    <section
+      className="bg-[#E9E8E8] px-5 py-16 sm:py-20 mt-8"
+      aria-labelledby="popular-categories-heading"
+    >
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-10 sm:mb-12">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#557A24]">
+            Find the right fit
+          </p>
+          <h2
+            id="popular-categories-heading"
+            className="text-4xl font-extrabold tracking-tight text-[#1B1F16] sm:text-5xl"
+          >
+            Popular Categories
+          </h2>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-[#1B1F16]/65 sm:text-base">
+            Explore equipment for every project, all in one place.
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {categories.map(
+            ({
+              name,
+              slug,
+              description,
+              itemCount,
+              icon: Icon,
+              iconColor,
+              iconBackground,
+            }) => (
+              <Link
+                key={slug}
+                href={`/category/${slug}`}
+                className="group flex flex-col min-h-44 gap-5 rounded-2xl border border-[#1B1F16]/[0.08] bg-white p-5 shadow-[0_2px_8px_rgba(27,31,22,0.04)] transition duration-200 hover:-translate-y-1 hover:border-[#7CB518]/50 hover:shadow-[0_12px_28px_rgba(27,31,22,0.09)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#557A24] sm:p-6"
+              >
+                <div className="flex justify-between">
+                    <span
+                  className={`flex size-16 shrink-0 items-center justify-center rounded-2xl ${iconBackground} ${iconColor} transition-transform duration-200 group-hover:scale-105`}
+                  aria-hidden="true"
+                >
+                  <Icon className="size-8" strokeWidth={1.7} />
+                </span>
+                <span
+                  className="text-xl text-[#1B1F16]/30 transition-all group-hover:translate-x-1 group-hover:text-[#557A24]"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+                </div>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-base font-bold text-[#1B1F16] transition-colors group-hover:text-[#557A24]">
+                    {name}
+                  </span>
+                  <span className="mt-1 block text-sm leading-5 text-[#1B1F16]/60">
+                    {description}
+                  </span>
+                  <span className="mt-3 inline-flex rounded-full bg-[#F4F4F2] px-3 py-1 text-xs font-semibold text-[#557A24]">
+                    {itemCount} items
+                  </span>
+                </span>
+                
+              </Link>
+            ),
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Categories;
