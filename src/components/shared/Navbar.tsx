@@ -17,7 +17,7 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <header className="relative z-50 bg-[#F4F4F3]">
+        <header className="sticky top-0 z-50 bg-[#F4F4F3]">
             <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
                 <Link href="/" className="shrink-0" aria-label="Easy Rent home">
                     <Image

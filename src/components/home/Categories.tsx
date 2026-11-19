@@ -26,15 +26,6 @@ const categories = [
     iconBackground: "bg-[#EEF4E5]",
   },
   {
-    name: "Cleaning Equipment",
-    slug: "cleaning-equipment",
-    description: "Pressure washers and floor care",
-    itemCount: 8,
-    icon: SprayCan,
-    iconColor: "text-[#47736B]",
-    iconBackground: "bg-[#EAF3F1]",
-  },
-  {
     name: "Construction Equipment",
     slug: "construction-equipment",
     description: "Heavy machinery and excavators",
@@ -69,6 +60,15 @@ const categories = [
     icon: Drill,
     iconColor: "text-[#6B6757]",
     iconBackground: "bg-[#F1F0EA]",
+  },
+  {
+    name: "Cleaning Equipment",
+    slug: "cleaning-equipment",
+    description: "Pressure washers and floor care",
+    itemCount: 8,
+    icon: SprayCan,
+    iconColor: "text-[#47736B]",
+    iconBackground: "bg-[#EAF3F1]",
   },
 ];
 

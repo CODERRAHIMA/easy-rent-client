@@ -10,13 +10,7 @@ import {
   fadeUpVariants,
   staggerVariants,
 } from "../utils/animation";
-import {
-  Search,
-  MapPin,
-  ShieldCheck,
-  CalendarClock,
-  CreditCard,
-} from "lucide-react";
+import { Search, ShieldCheck, CalendarClock, CreditCard } from "lucide-react";
 
 const trust = [
   { icon: ShieldCheck, text: "Verified equipment owners" },
@@ -28,13 +22,11 @@ const Banner = () => {
   const router = useRouter();
   const reduce = useReducedMotion();
   const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
 
   const onSearch = (e: React.SyntheticEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (name.trim()) params.set("search", name.trim());
-    if (location.trim()) params.set("location", location.trim());
     router.push(`/all-equipment?${params.toString()}`); // change to your route
   };
 
@@ -43,7 +35,7 @@ const Banner = () => {
 
   return (
     <section className="bg-[#F4F4F2] text-[#1B1F16]">
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 lg:grid-cols-[1.05fr_0.95fr] xl:px-0">
+      <div className="mx-auto grid max-w-7xl items-center gap-6 px-5 py-14 lg:grid-cols-[1.05fr_0.95fr] xl:px-0">
         {/* Left: message + search */}
         <motion.div
           variants={container}
@@ -87,7 +79,7 @@ const Banner = () => {
           <motion.form
             variants={item}
             onSubmit={onSearch}
-            className="mt-8 flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-[#1B1F16]/10 bg-white p-2 shadow-sm sm:flex-row sm:items-center"
+            className="mt-8 flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-[#1B1F16]/10 bg-white p-2 shadow-sm sm:flex-row sm:items-center"
           >
             <label className="flex flex-1 items-center gap-2 px-3 py-2">
               <Search className="h-5 w-5 shrink-0 text-[#3F6212]" aria-hidden />
@@ -95,27 +87,16 @@ const Banner = () => {
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="What do you need?"
+                placeholder="What do you need? e.g. excavator"
                 className="w-full bg-transparent text-sm outline-none placeholder:text-[#1B1F16]/45"
               />
             </label>
-            <span className="hidden h-8 w-px bg-[#1B1F16]/10 sm:block" />
-            <label className="flex flex-1 items-center gap-2 px-3 py-2">
-              <MapPin className="h-5 w-5 shrink-0 text-[#3F6212]" aria-hidden />
-              <span className="sr-only">Location</span>
-              <input
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Location"
-                className="w-full bg-transparent text-sm outline-none placeholder:text-[#1B1F16]/45"
-              />
-            </label>
+
             <button
               type="submit"
-              className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-[#86c21d] to-[#7CB518] px-6 py-3 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white/20 transition-all duration-200 hover:from-[#7CB518] hover:to-[#699c12] hover:shadow-md hover:shadow-[#7CB518]/25 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212] cursor-pointer"
+              className="rounded-xl bg-[#7CB518] px-6 py-3 text-sm font-bold text-white cursor-pointer transition hover:bg-[#6aa00f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212]"
             >
-              <Search className="size-4 stroke-[2.5] transition-transform duration-200 group-hover:scale-110" />
-              <span>Search</span>
+              Search
             </button>
           </motion.form>
 
