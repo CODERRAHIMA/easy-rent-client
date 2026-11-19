@@ -76,29 +76,6 @@ const Banner = () => {
           </motion.p>
 
           {/* Search */}
-          {/* <motion.form
-            variants={item}
-            onSubmit={onSearch}
-            className="mt-8 flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-[#1B1F16]/10 bg-white p-2 shadow-sm sm:flex-row sm:items-center"
-          >
-            <label className="flex flex-1 items-center gap-2 px-3 py-2">
-              <Search className="h-5 w-5 shrink-0 text-[#3F6212]" aria-hidden />
-              <span className="sr-only">Equipment name</span>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="What do you need? e.g. excavator"
-                className="w-full bg-transparent text-sm outline-none placeholder:text-[#1B1F16]/45"
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="rounded-xl bg-[#7CB518] px-6 py-3 text-sm font-bold text-white cursor-pointer transition hover:bg-[#6aa00f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212]"
-            >
-              Search
-            </button>
-          </motion.form> */}
           <motion.form
             variants={item}
             onSubmit={onSearch}

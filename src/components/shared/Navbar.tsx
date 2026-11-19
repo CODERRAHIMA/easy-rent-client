@@ -8,9 +8,6 @@ import { useState } from "react";
 const navLinks = [
     { label: "Home", href: "/" },
     { label: "All Equipment", href: "/all-equipment" },
-    { label: "About us", href: "/about" },
-    { label: "Contact Us", href: "/contact" },
-    { label: "How it work", href: "/how-it-work" },
 ];
 
 const Navbar = () => {
@@ -35,7 +32,7 @@ const Navbar = () => {
                         <Link
                             key={link.href}
                             href={link.href}
-                            className="text-sm font-medium text-slate-700 transition-colors hover:text-black"
+                            className="text-sm font-semibold text-slate-700 transition-colors hover:text-black"
                         >
                             {link.label}
                         </Link>
@@ -51,7 +48,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                         href="/register"
-                        className="inline-flex h-11 items-center justify-center rounded-lg bg-[#76B019] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#679b16]"
+                        className="inline-flex h-11 items-center justify-center rounded-lg bg-[#7CB518] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#679b16]"
                     >
                         Register
                     </Link>
