@@ -1,7 +1,8 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Star, Quote } from "lucide-react";
+import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 const reviews = [
@@ -24,7 +25,35 @@ const reviews = [
     img: "/boyReview.avif",
     rented: "Compact tractor",
     rating: 4,
-    comment: "Easy to find the right tractor and the weekly rate was fair. Payment through Stripe felt safe and quick.",
+    comment: "Easy to find the right tractor and the weekly rate was fair. Payment through Stripe felt safe and quick. Experience was good.",
+  },
+  {
+    name: "Sofia Alvarez",
+    img: "/girlReview.jpg",
+    rented: "Event lighting set",
+    rating: 5,
+    comment: "Our event lighting looked amazing. Everything was verified and the owner confirmed delivery the same day.",
+  },
+  {
+    name: "Daniel Doe",
+    img: "/boyReview.avif",
+    rented: "Excavator 20T",
+    rating: 5,
+    comment: "Booked in minutes and the machine arrived on time and in great shape. It saved us from buying one for a two-week job.",
+  },
+  {
+    name: "Peter Pank",
+    img: "/boyReview.avif",
+    rented: "DSLR camera kit",
+    rating: 5,
+    comment: "I rented a full camera kit for a wedding shoot. The owner was helpful and the price was far lower than I expected.",
+  },
+  {
+    name: "Marcus Lee",
+    img: "/boyReview.avif",
+    rented: "Compact tractor",
+    rating: 4,
+    comment: "Easy to find the right tractor and the weekly rate was fair. Payment through Stripe felt safe and quick. Experience was good.",
   },
   {
     name: "Sofia Alvarez",
@@ -50,15 +79,43 @@ function Stars({ value }: { value: number }) {
 }
 
 export default function Reviews() {
-  const reduce = useReducedMotion();
+  const reduceMotion = useReducedMotion();
   const avg = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1);
+
+  const scrollContainerRef = useRef<HTMLUListElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener("resize", checkScroll);
+    return () => window.removeEventListener("resize", checkScroll);
+  }, []);
+
+  const handleScroll = (direction: "left" | "right") => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const scrollAmount =
+      (el.firstElementChild?.getBoundingClientRect().width ?? 300) + 20;
+    el.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <section className="bg-[#F4F4F2] text-[#1B1F16]">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: reduce ? 0 : 24 }}
+          initial={{ opacity: 0, y: reduceMotion ? 0 : 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.55, ease: "easeOut" }}
@@ -72,7 +129,7 @@ export default function Reviews() {
           </div>
 
           <div className="flex items-center gap-4 rounded-2xl border border-[#1B1F16]/10 bg-white px-5 py-4">
-            <span className="text-4xl font-extrabold leading-none">{avg}</span>
+            <span className="text-3xl sm:text-4xl font-extrabold leading-none">{avg}</span>
             <div>
               <Stars value={Math.round(Number(avg))} />
               <p className="mt-1 text-xs font-medium text-[#1B1F16]/60">Average customer rating</p>
@@ -80,16 +137,43 @@ export default function Reviews() {
           </div>
         </motion.div>
 
+        {/* Left & Right Arrow Buttons */}
+        <div className="mt-8 flex justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={() => handleScroll("left")}
+            disabled={!canScrollLeft}
+            aria-label="Scroll reviews left"
+            className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-[#1B1F16]/10 bg-white text-[#1B1F16] shadow-sm transition-all duration-200 hover:border-[#7CB518] hover:bg-[#7CB518] hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#1B1F16]/10 disabled:hover:bg-white disabled:hover:text-[#1B1F16]"
+          >
+            <ChevronLeft className="size-5" strokeWidth={2.2} />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleScroll("right")}
+            disabled={!canScrollRight}
+            aria-label="Scroll reviews right"
+            className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-[#1B1F16]/10 bg-white text-[#1B1F16] shadow-sm transition-all duration-200 hover:border-[#7CB518] hover:bg-[#7CB518] hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[#1B1F16]/10 disabled:hover:bg-white disabled:hover:text-[#1B1F16]"
+          >
+            <ChevronRight className="size-5" strokeWidth={2.2} />
+          </button>
+        </div>
+
         {/* Cards */}
-        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <ul
+          ref={scrollContainerRef}
+          onScroll={checkScroll}
+          aria-label="Customer reviews"
+          className="mt-4 -mx-2 flex snap-x snap-mandatory gap-5 overflow-x-auto px-2 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mt-6"
+        >
           {reviews.map((r, i) => (
             <motion.li
-              key={r.name}
-              initial={{ opacity: 0, y: reduce ? 0 : 30 }}
+              key={`${r.name}-${i}`}
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.55, ease: "easeOut", delay: i * 0.1 }}
-              className="flex h-full flex-col rounded-3xl border border-[#1B1F16]/10 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+              className="flex h-full w-[85%] shrink-0 snap-start flex-col rounded-3xl border border-[#1B1F16]/10 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-lg sm:w-[calc(50%_-_10px)] lg:w-[calc(25%_-_15px)]"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#7CB518] text-[#1B1F16]">
                 <Quote className="h-5 w-5" aria-hidden />
@@ -101,31 +185,25 @@ export default function Reviews() {
 
               <p className="mt-3 flex-1 text-sm leading-relaxed text-[#1B1F16]/75">{r.comment}</p>
 
-              {/* <div className="mt-6 flex items-center gap-3 border-t border-[#1B1F16]/10 pt-5">
-                <Image src={r.img} alt="UserImg" width={50} height={50}/>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold">{r.name}</p>
-                  <p className="truncate text-xs text-[#1B1F16]/60">Rented: {r.rented}</p>
-                </div>
-              </div> */}
               <div className="mt-6 flex items-center gap-3.5 border-t border-[#1B1F16]/10 pt-5">
-  <div className="relative size-11 shrink-0 overflow-hidden rounded-full ring-2 ring-[#7CB518]/25 ring-offset-2 ring-offset-white">
-    <Image
-      src={r.img}
-      alt={r.name}
-      fill
-      sizes="44px"
-      className="object-cover object-top"
-    />
-  </div>
-  <div className="min-w-0">
-    <p className="truncate text-sm font-bold text-[#1B1F16]">{r.name}</p>
-    <p className="truncate text-xs text-[#1B1F16]/60">
-      Rented: {r.rented}
-    </p>
-  </div>
-</div>
-
+                <div className="relative size-11 shrink-0 overflow-hidden rounded-full ring-2 ring-[#7CB518]/25 ring-offset-2 ring-offset-white">
+                  <Image
+                    src={r.img}
+                    alt={r.name}
+                    fill
+                    sizes="44px"
+                    className="object-cover object-top"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-[#1B1F16]">
+                    {r.name}
+                  </p>
+                  <p className="truncate text-xs text-[#1B1F16]/60">
+                    Rented: {r.rented}
+                  </p>
+                </div>
+              </div>
             </motion.li>
           ))}
         </ul>
