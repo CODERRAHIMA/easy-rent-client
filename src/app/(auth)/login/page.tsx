@@ -109,6 +109,26 @@ const LoginPage = () => {
 
           <CardContent className="">
             <form onSubmit={handleSignIn} className="space-y-5">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-10 bg-black text-white cursor-pointer hover:bg-gray-900 hover:text-white"
+                onClick={handleGoogleSignIn}
+                disabled={pending !== null}
+              >
+                <Image src="/google.png" alt="google" width={14} height={14} />
+                {pending === "google" ? "Connecting..." : "Continue with Google"}
+              </Button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden>
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                  <span className="bg-card px-3 text-muted-foreground">Or</span>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
@@ -169,31 +189,11 @@ const LoginPage = () => {
                 className={`w-full h-10 bg-[#7CB518] text-white font-semibold hover:bg-[#679b16] transition-colors`}
               >
                 {pending === "email" ? "Signing in..." : "Sign in"}
-              </Button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center" aria-hidden>
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                  <span className="bg-card px-3 text-muted-foreground">Or</span>
-                </div>
-              </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-10 bg-black text-white cursor-pointer hover:bg-gray-900 hover:text-white"
-                onClick={handleGoogleSignIn}
-                disabled={pending !== null}
-              >
-                <Image src="/google.png" alt="google" width={14} height={14} />
-                {pending === "google" ? "Connecting..." : "Continue with Google"}
-              </Button>
+              </Button>            
             </form>
           </CardContent>
 
-          <CardFooter className="justify-center pt-4 border-t-0 bg-transparent p-6">
+          <CardFooter className="justify-center pt-4 border-t-0 bg-transparent p-6 pt-0">
             <p className="text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link

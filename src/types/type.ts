@@ -1,0 +1,1 @@
+export type DashboardRole = "admin" | "owner" | "customer";

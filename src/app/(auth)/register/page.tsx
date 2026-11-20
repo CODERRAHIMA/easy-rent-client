@@ -141,6 +141,27 @@ const RegisterPage = () => {
 
           <CardContent className="">
             <form onSubmit={handleSignUp} className="space-y-5">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full bg-black text-white h-10 cursor-pointer hover:bg-gray-900 hover:text-white"
+                onClick={handleGoogleSignIn}
+                disabled={pending !== null}
+              >
+                <Image src="/google.png" alt="google" width={14} height={14} />
+                {pending === "google" ? "Connecting..." : "Register with Google"}
+              </Button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden>
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                  <span className="bg-card px-3 text-muted-foreground">Or</span>
+                </div>
+              </div>
+
+
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -306,30 +327,10 @@ const RegisterPage = () => {
               >
                 {pending === "email" ? "Creating account..." : "Create Account"}
               </Button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center" aria-hidden>
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                  <span className="bg-card px-3 text-muted-foreground">Or</span>
-                </div>
-              </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full bg-black text-white h-10 cursor-pointer hover:bg-gray-900 hover:text-white"
-                onClick={handleGoogleSignIn}
-                disabled={pending !== null}
-              >
-                <Image src="/google.png" alt="google" width={14} height={14} />
-                {pending === "google" ? "Connecting..." : "Register with Google"}
-              </Button>
             </form>
           </CardContent>
 
-          <CardFooter className="justify-center border-t-0 bg-transparent p-6">
+          <CardFooter className="justify-center border-t-0 bg-transparent p-6 pt-0">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link
