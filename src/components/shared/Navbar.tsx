@@ -56,7 +56,7 @@ const Navbar = () => {
   };
 
   const navLinks = session?.user
-    ? [...baseLinks, { label: "Dashboard", href: "/dashboard" }]
+    ? [...baseLinks, { label: "Dashboard", href: `${session?.user.role}/dashboard` }]
     : baseLinks;
 
   return (

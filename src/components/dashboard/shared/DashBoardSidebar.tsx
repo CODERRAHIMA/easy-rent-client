@@ -41,24 +41,24 @@ type SidebarItem = {
 
 const roleBasedSidebarItems: Record<DashboardRole, SidebarItem[]> = {
   customer: [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "My Rentals", href: "/dashboard/my-rentals", icon: CalendarCheck },
-    { label: "Favorites", href: "/dashboard/favorites", icon: Heart },
-    { label: "Profile", href: "/dashboard/profile", icon: User },
+    { label: "Dashboard", href: "/customer/dashboard", icon: LayoutDashboard },
+    { label: "My Rentals", href: "/customer/dashboard/my-rentals", icon: CalendarCheck },
+    { label: "Favorites", href: "/customer/dashboard/favorites", icon: Heart },
+    { label: "Profile", href: "/customer/dashboard/profile", icon: User },
   ],
   owner: [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Add Equipment", href: "/dashboard/add-equipment", icon: PlusCircle },
-    { label: "My Equipments", href: "/dashboard/my-equipment", icon: Package },
-    { label: "My Equipment Rentals", href: "/dashboard/my-equipment-rentals", icon: ClipboardList },
-    { label: "Profile", href: "/dashboard/profile", icon: User },
+    { label: "Dashboard", href: "/owner/dashboard", icon: LayoutDashboard },
+    { label: "Add Equipment", href: "/owner/dashboard/add-equipment", icon: PlusCircle },
+    { label: "My Equipments", href: "/owner/dashboard/my-equipment", icon: Package },
+    { label: "My Equipment Rentals", href: "/owner/dashboard/my-equipment-rentals", icon: ClipboardList },
+    { label: "Profile", href: "/owner/dashboard/profile", icon: User },
   ],
   admin: [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "All Users", href: "/dashboard/users", icon: Users },
-    { label: "All Equipments", href: "/dashboard/equipment", icon: Boxes },
-    { label: "All Rentals", href: "/dashboard/rentals", icon: Receipt },
-    { label: "My Profile", href: "/dashboard/profile", icon: User },
+    { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+    { label: "All Users", href: "/admin/dashboard/all-users", icon: Users },
+    { label: "All Equipments", href: "/admin/dashboard/all-equipments", icon: Boxes },
+    { label: "All Rentals", href: "/admin/dashboard/all-rentals", icon: Receipt },
+    { label: "My Profile", href: "/admin/dashboard/profile", icon: User },
   ],
 };
 
@@ -79,7 +79,7 @@ export function DashboardSidebar() {
   const items = roleBasedSidebarItems[activeRole];
 
   const isActive = (href: string) =>
-    href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <Sidebar collapsible="icon">
