@@ -20,7 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { authClient, signIn } from "@/lib/auth-client";
+import { signIn } from "@/lib/auth-client";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -195,7 +195,7 @@ const LoginPage = () => {
 
           <CardFooter className="justify-center pt-4 border-t-0 bg-transparent p-6">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/register"
                 className={`text-[#7CB518] font-semibold hover:underline transition-colors`}
