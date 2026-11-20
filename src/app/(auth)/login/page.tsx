@@ -20,7 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signIn } from "@/lib/auth-client";
+import { authClient, signIn } from "@/lib/auth-client";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -68,25 +68,25 @@ const LoginPage = () => {
     }
   };
 
-  // async function handleGoogleSignIn() {
-  //   setPending("google");
+  async function handleGoogleSignIn() {
+    setPending("google");
 
-  //   try {
-  //     const { error } = await authClient.signIn.social({
-  //       provider: "google",
-  //     });
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+      });
 
-  //     if (error) {
-  //       toast.error(error.message || "Unable to continue with Google.");
-  //     } else {
-  //       toast.success("Google Signin Successful.");
-  //     }
-  //   } catch {
-  //     toast.error("Unable to continue with Google right now. Please try again.");
-  //   } finally {
-  //     setPending(null);
-  //   }
-  // }
+      if (error) {
+        toast.error(error.message || "Unable to continue with Google.");
+      } else {
+        toast.success("Google Signin Successful.");
+      }
+    } catch {
+      toast.error("Unable to continue with Google right now. Please try again.");
+    } finally {
+      setPending(null);
+    }
+  }
 
   return (
     <div className="min-h-[calc(100vh-rem(200px))] flex items-center justify-center bg-[#F4F4F3] px-4 py-12">
@@ -183,8 +183,8 @@ const LoginPage = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full h-10 bg-black text-white"
-                // onClick={handleGoogleSignIn}
+                className="w-full h-10 bg-black text-white cursor-pointer hover:bg-gray-900 hover:text-white"
+                onClick={handleGoogleSignIn}
                 disabled={pending !== null}
               >
                 <Image src="/google.png" alt="google" width={14} height={14} />

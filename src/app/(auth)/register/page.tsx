@@ -100,25 +100,25 @@ const RegisterPage = () => {
     }
   };
 
-  // async function handleGoogleSignIn() {
-  //   setPending("google");
+  async function handleGoogleSignIn() {
+    setPending("google");
 
-  //   try {
-  //     const { error } = await authClient.signIn.social({
-  //       provider: "google",
-  //     });
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+      });
 
-  //     if (error) {
-  //       toast.error(error.message || "Unable to continue with Google.");
-  //     } else {
-  //       toast.success("Google Signin Successful.");
-  //     }
-  //   } catch {
-  //     toast.error("Unable to continue with Google right now. Please try again.");
-  //   } finally {
-  //     setPending(null);
-  //   }
-  // }
+      if (error) {
+        toast.error(error.message || "Unable to continue with Google.");
+      } else {
+        toast.success("Google Signin Successful.");
+      }
+    } catch {
+      toast.error("Unable to continue with Google right now. Please try again.");
+    } finally {
+      setPending(null);
+    }
+  }
 
   return (
     <div className="min-h-[calc(100vh-rem(200px))] flex items-center justify-center bg-[#F4F4F3] px-4 py-12">
@@ -319,8 +319,8 @@ const RegisterPage = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full bg-black text-white h-10"
-                // onClick={handleGoogleSignIn}
+                className="w-full bg-black text-white h-10 cursor-pointer hover:bg-gray-900 hover:text-white"
+                onClick={handleGoogleSignIn}
                 disabled={pending !== null}
               >
                 <Image src="/google.png" alt="google" width={14} height={14} />
