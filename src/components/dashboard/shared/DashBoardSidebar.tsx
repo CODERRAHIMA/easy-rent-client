@@ -33,13 +33,13 @@ import { DashboardRole } from "@/types/type";
 import { DashboardUser } from "./DashboardUser";
 import { useSession } from "@/lib/auth-client";
 
-type NavItem = {
+type SidebarItem = {
   label: string;
   href: string;
   icon: LucideIcon;
 };
 
-const navByRole: Record<DashboardRole, NavItem[]> = {
+const roleBasedSidebarItems: Record<DashboardRole, SidebarItem[]> = {
   customer: [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "My Rentals", href: "/dashboard/my-rentals", icon: CalendarCheck },
@@ -48,23 +48,15 @@ const navByRole: Record<DashboardRole, NavItem[]> = {
   ],
   owner: [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    {
-      label: "Add Equipment",
-      href: "/dashboard/add-equipment",
-      icon: PlusCircle,
-    },
-    { label: "My Equipment", href: "/dashboard/my-equipment", icon: Package },
-    {
-      label: "My Equipment Rental",
-      href: "/dashboard/my-equipment-rentals",
-      icon: ClipboardList,
-    },
+    { label: "Add Equipment", href: "/dashboard/add-equipment", icon: PlusCircle },
+    { label: "My Equipments", href: "/dashboard/my-equipment", icon: Package },
+    { label: "My Equipment Rentals", href: "/dashboard/my-equipment-rentals", icon: ClipboardList },
     { label: "Profile", href: "/dashboard/profile", icon: User },
   ],
   admin: [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "All Users", href: "/dashboard/users", icon: Users },
-    { label: "All Equipment", href: "/dashboard/equipment", icon: Boxes },
+    { label: "All Equipments", href: "/dashboard/equipment", icon: Boxes },
     { label: "All Rentals", href: "/dashboard/rentals", icon: Receipt },
     { label: "My Profile", href: "/dashboard/profile", icon: User },
   ],
@@ -76,39 +68,22 @@ const roleLabel: Record<DashboardRole, string> = {
   admin: "Admin",
 };
 
-type DashboardSidebarProps = React.ComponentProps<typeof Sidebar> & {
-  role?: DashboardRole;
-};
-
-export function DashboardSidebar({
-  role,
-  ...props
-}: DashboardSidebarProps) {
+export function DashboardSidebar() {
   const pathname = usePathname();
-  const { data: session, isPending } = useSession();
 
-  const user = session?.user;
-  const activeRole: DashboardRole =
-    role ?? (user?.role as DashboardRole) ?? "customer";
-  const items = navByRole[activeRole];
+  const { data: session, isPending } = useSession();
+  const user = session?.user; 
+
+  const activeRole: DashboardRole = (user?.role as DashboardRole) ?? "customer";
+
+  const items = roleBasedSidebarItems[activeRole];
 
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <Sidebar collapsible="icon" {...props}>
-      {/* <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
-        <Link href="/" aria-label="Easy Rent home" className="block">
-          <Image
-            src="/logo.png"
-            alt="Easy Rent"
-            width={150}
-            height={50}
-            className="h-10 w-auto object-contain"
-          />
-        </Link>
-      </SidebarHeader> */}
-            <SidebarHeader className="border-b border-sidebar-border px-4 py-4 group-data-[collapsible=icon]:px-2">
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="border-b border-sidebar-border px-4 py-4 group-data-[collapsible=icon]:px-2">
         <Link
           href="/"
           aria-label="Easy Rent home"
@@ -132,7 +107,6 @@ export function DashboardSidebar({
           />
         </Link>
       </SidebarHeader>
-
 
       <SidebarContent>
         <SidebarGroup>
