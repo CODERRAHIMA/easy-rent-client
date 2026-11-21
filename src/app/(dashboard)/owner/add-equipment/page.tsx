@@ -232,7 +232,7 @@ export default function OwnerAddequipmentPage() {
       setTerms([""]);
       setPhoto(null);
       setPreview(null);
-      router.push("/my-equipments");
+      router.push("/owner/my-equipment");
     } catch (err) {
       setError(
         err instanceof Error

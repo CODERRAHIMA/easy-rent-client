@@ -3,42 +3,32 @@
 import { memo, useEffect, useState } from "react";
 import { CalendarDays, CalendarX2, Wrench } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-
-type PaymentStatus = "paid" | "pending" | "failed";
-type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled";
-
-type OwnerRental = {
-  _id: string;
-  customer: { name: string; email: string; phone?: string; photo?: string };
-  equipment: { name: string; category?: string; image?: string };
-  startDate: string;
-  endDate: string;
-  requiredQuantity: number;
-  totalAmount: number;
-  paymentStatus: PaymentStatus;
-  bookingStatus: BookingStatus;
-};
+import type {
+  OwnerRental,
+  RentalApiResult,
+  RentalBadgeStyle,
+  RentalBookingStatus,
+  RentalPaymentStatus,
+} from "@/types/type";
 
 const CURRENCY = "৳";
 const API_URL = "http://localhost:5000/bookings";
 const MS_PER_DAY = 86_400_000;
 
-type BadgeStyle = { label: string; badge: string; dot: string };
-
-const paymentStyle: Record<PaymentStatus, BadgeStyle> = {
+const paymentStyle: Record<RentalPaymentStatus, RentalBadgeStyle> = {
   paid: { label: "Paid", badge: "bg-[#EEF4E0] text-[#3F6212]", dot: "bg-[#7CB518]" },
   pending: { label: "Pending", badge: "bg-amber-100 text-amber-800", dot: "bg-amber-500" },
   failed: { label: "Failed", badge: "bg-red-100 text-red-700", dot: "bg-red-500" },
 };
 
-const bookingStyle: Record<BookingStatus, BadgeStyle> = {
+const bookingStyle: Record<RentalBookingStatus, RentalBadgeStyle> = {
   pending: { label: "Pending", badge: "bg-amber-100 text-amber-800", dot: "bg-amber-500" },
   confirmed: { label: "Confirmed", badge: "bg-sky-100 text-sky-800", dot: "bg-sky-500" },
   completed: { label: "Completed", badge: "bg-[#EEF4E0] text-[#3F6212]", dot: "bg-[#7CB518]" },
   cancelled: { label: "Cancelled", badge: "bg-red-100 text-red-700", dot: "bg-red-500" },
 };
 
-const tabs: { value: BookingStatus | "all"; label: string }[] = [
+const tabs: { value: RentalBookingStatus | "all"; label: string }[] = [
   { value: "all", label: "All" },
   { value: "pending", label: "Pending" },
   { value: "confirmed", label: "Confirmed" },
@@ -48,12 +38,14 @@ const tabs: { value: BookingStatus | "all"; label: string }[] = [
 
 /* ---------- helpers ---------- */
 
-type ApiResult = { data?: unknown; message?: string };
-
 /** fetch + parse JSON + throw the API message (or the fallback) when the response is not ok */
-async function requestJson(url: string, init: RequestInit, fallbackMessage: string): Promise<ApiResult> {
+async function requestJson(
+  url: string,
+  init: RequestInit,
+  fallbackMessage: string,
+): Promise<RentalApiResult> {
   const response = await fetch(url, init);
-  const result: ApiResult = await response.json();
+  const result: RentalApiResult = await response.json();
   if (!response.ok) throw new Error(result.message || fallbackMessage);
   return result;
 }
@@ -69,7 +61,7 @@ const getDays = (start: string, end: string) =>
 
 /* ---------- small components ---------- */
 
-function Badge({ label, badge, dot }: BadgeStyle) {
+function Badge({ label, badge, dot }: RentalBadgeStyle) {
   return (
     <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold ${badge}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
@@ -188,15 +180,17 @@ export default function OwnerMyEquipmentRentalsPage() {
   const [rentals, setRentals] = useState<OwnerRental[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState<BookingStatus | "all">("all");
+  const [filter, setFilter] = useState<RentalBookingStatus | "all">("all");
 
   // Fetch the rentals of the logged-in owner's equipment once the session is ready
   useEffect(() => {
     if (isPending) return;
 
     if (!email) {
-      setRentals([]);
-      setLoading(false);
+      queueMicrotask(() => {
+        setRentals([]);
+        setLoading(false);
+      });
       return;
     }
 
@@ -227,16 +221,21 @@ export default function OwnerMyEquipmentRentalsPage() {
     return () => controller.abort();
   }, [email, isPending]);
 
-  const count = (status: BookingStatus) => rentals.filter((r) => r.bookingStatus === status).length;
-  const earnings = rentals
-    .filter((r) => r.paymentStatus === "paid")
-    .reduce((sum, r) => sum + r.totalAmount, 0);
+  const summary = rentals.reduce(
+    (totals, rental) => {
+      if (rental.bookingStatus === "confirmed") totals.confirmed += 1;
+      if (rental.bookingStatus === "completed") totals.completed += 1;
+      if (rental.paymentStatus === "paid") totals.earnings += rental.totalAmount;
+      return totals;
+    },
+    { confirmed: 0, completed: 0, earnings: 0 },
+  );
 
   const stats = [
     { label: "Total rentals", value: rentals.length.toLocaleString() },
-    { label: "Active (confirmed)", value: count("confirmed").toLocaleString() },
-    { label: "Completed", value: count("completed").toLocaleString() },
-    { label: "Total earnings", value: `${CURRENCY}${earnings.toLocaleString()}` },
+    { label: "Active (confirmed)", value: summary.confirmed.toLocaleString() },
+    { label: "Completed", value: summary.completed.toLocaleString() },
+    { label: "Total earnings", value: `${CURRENCY}${summary.earnings.toLocaleString()}` },
   ];
 
   const rows = rentals.filter((r) => filter === "all" || r.bookingStatus === filter);

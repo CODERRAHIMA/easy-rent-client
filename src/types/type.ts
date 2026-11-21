@@ -2,6 +2,12 @@ export type DashboardRole = "admin" | "owner" | "customer";
 
 export type EquipmentRentalType = "Daily" | "Weekly" | "Monthly";
 export type EquipmentStatus = "pending" | "approved" | "rejected";
+export type RentalPaymentStatus = "paid" | "pending" | "failed";
+export type RentalBookingStatus =
+  | "pending"
+  | "confirmed"
+  | "completed"
+  | "cancelled";
 
 export type Equipment = {
   _id: string;
@@ -20,6 +26,38 @@ export type OwnerEquipment = Omit<Equipment, "status" | "image"> & {
   model: string;
   image: string;
   status: EquipmentStatus;
+};
+
+export type OwnerRental = {
+  _id: string;
+  customer: {
+    name: string;
+    email: string;
+    phone?: string;
+    photo?: string;
+  };
+  equipment: {
+    name: string;
+    category?: string;
+    image?: string;
+  };
+  startDate: string;
+  endDate: string;
+  requiredQuantity: number;
+  totalAmount: number;
+  paymentStatus: RentalPaymentStatus;
+  bookingStatus: RentalBookingStatus;
+};
+
+export type RentalBadgeStyle = {
+  label: string;
+  badge: string;
+  dot: string;
+};
+
+export type RentalApiResult = {
+  data?: unknown;
+  message?: string;
 };
 
 export type EquipmentOwner = {
