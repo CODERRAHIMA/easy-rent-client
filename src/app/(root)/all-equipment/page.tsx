@@ -2,27 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Search,
-  MapPin,
-  SlidersHorizontal,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  PackageSearch,
-  Handshake,
-  ArrowRight,
-} from "lucide-react";
+import { Search, MapPin, SlidersHorizontal, X, ChevronLeft, ChevronRight, PackageSearch, Handshake, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Equipment, EquipmentFilters } from "@/types/type";
 import EquipmentCard from "@/components/equipment/EquipmentCard";
 
@@ -58,6 +42,20 @@ const initialFilters: EquipmentFilters = {
 const fieldCls =
   "h-11 rounded-xl border-[#1B1F16]/15 bg-white focus-visible:border-[#7CB518] focus-visible:ring-[#7CB518]/25";
 
+function getEquipmentRecords(result: unknown): Equipment[] | null {
+  if (Array.isArray(result)) return result as Equipment[];
+  if (!result || typeof result !== "object") return null;
+
+  if ("data" in result && Array.isArray(result.data)) {
+    return result.data as Equipment[];
+  }
+  if ("equipments" in result && Array.isArray(result.equipments)) {
+    return result.equipments as Equipment[];
+  }
+
+  return null;
+}
+
 function Pill({
   active,
   onClick,
@@ -80,6 +78,35 @@ function Pill({
     >
       {children}
     </button>
+  );
+}
+
+function PillFilter({
+  label,
+  options,
+  value,
+  onSelect,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onSelect: (option: string) => void;
+}) {
+  return (
+    <div>
+      <Label className="text-sm font-semibold">{label}</Label>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {options.map((option) => (
+          <Pill
+            key={option}
+            active={value === option}
+            onClick={() => onSelect(option)}
+          >
+            {option}
+          </Pill>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -122,28 +149,14 @@ export default function AllEquipmentPage() {
           );
         }
 
-        const result: unknown = await response.json();
-
-        const records = Array.isArray(result)
-          ? result
-          : result &&
-              typeof result === "object" &&
-              "data" in result &&
-              Array.isArray(result.data)
-            ? result.data
-            : result &&
-                typeof result === "object" &&
-                "equipments" in result &&
-                Array.isArray(result.equipments)
-              ? result.equipments
-              : null;
+        const records = getEquipmentRecords(await response.json());
 
         if (!records) {
           throw new Error("The equipment API returned an unexpected response.");
         }
 
         // Backend already filters approved equipments
-        setEquipment(records as Equipment[]);
+        setEquipment(records);
       } catch (err) {
         if (controller.signal.aborted) return;
 
@@ -293,20 +306,12 @@ export default function AllEquipmentPage() {
                 </ul>
               </div>
 
-              <div>
-                <Label className="text-sm font-semibold">Rental type</Label>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {rentalTypes.map((t) => (
-                    <Pill
-                      key={t}
-                      active={filters.rentalType === t}
-                      onClick={() => update("rentalType", t)}
-                    >
-                      {t}
-                    </Pill>
-                  ))}
-                </div>
-              </div>
+              <PillFilter
+                label="Rental type"
+                options={rentalTypes}
+                value={filters.rentalType}
+                onSelect={(value) => update("rentalType", value)}
+              />
 
               <div>
                 <Label className="text-sm font-semibold">Price range</Label>
@@ -333,20 +338,12 @@ export default function AllEquipmentPage() {
                 </div>
               </div>
 
-              <div>
-                <Label className="text-sm font-semibold">Availability</Label>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {availabilityOptions.map((a) => (
-                    <Pill
-                      key={a}
-                      active={filters.availability === a}
-                      onClick={() => update("availability", a)}
-                    >
-                      {a}
-                    </Pill>
-                  ))}
-                </div>
-              </div>
+              <PillFilter
+                label="Availability"
+                options={availabilityOptions}
+                value={filters.availability}
+                onSelect={(value) => update("availability", value)}
+              />
             </div>
           </aside>
 

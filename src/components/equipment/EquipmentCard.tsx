@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CalendarClock, MapPin, Wrench } from "lucide-react";
+import { ArrowRight, CalendarClock, Heart, MapPin, Wrench } from "lucide-react";
 import type { Equipment, EquipmentRentalType } from "@/types/type";
 
 const CURRENCY = "৳";
@@ -40,6 +40,15 @@ export default function EquipmentCard({ item }: { item: Equipment }) {
         >
           {available ? "Available" : "Unavailable"}
         </span>
+
+        {/* favourite button */}
+        <button
+          type="button"
+          aria-label={`Add ${item.name} to favorites`}
+          className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/95 text-[#1B1F16] shadow-md transition hover:bg-white"
+        >
+          <Heart className="size-5" aria-hidden="true" />
+        </button>
       </div>
 
       <div className="flex flex-1 flex-col p-5">

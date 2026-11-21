@@ -14,6 +14,24 @@ export type Equipment = {
   status: string;
 };
 
+export type EquipmentOwner = {
+  name: string;
+  email: string;
+  image?: string | null;
+  photo?: string | null;
+  phone?: string | null;
+};
+
+export type EquipmentDetails = Omit<Equipment, "status" | "image"> & {
+  description: string;
+  image?: string | null;
+  condition: string;
+  brand: string;
+  model: string;
+  rentalTerms: string[];
+  owner: EquipmentOwner;
+};
+
 export type EquipmentFilters = {
   search: string;
   location: string;
