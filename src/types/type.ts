@@ -1,6 +1,7 @@
 export type DashboardRole = "admin" | "owner" | "customer";
 
 export type EquipmentRentalType = "Daily" | "Weekly" | "Monthly";
+export type EquipmentStatus = "pending" | "approved" | "rejected";
 
 export type Equipment = {
   _id: string;
@@ -12,6 +13,13 @@ export type Equipment = {
   rentalType: EquipmentRentalType;
   availableQuantity: number;
   status: string;
+};
+
+export type OwnerEquipment = Omit<Equipment, "status" | "image"> & {
+  brand: string;
+  model: string;
+  image: string;
+  status: EquipmentStatus;
 };
 
 export type EquipmentOwner = {

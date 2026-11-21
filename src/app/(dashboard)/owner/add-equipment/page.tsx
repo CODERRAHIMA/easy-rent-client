@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const categories = [
   "Construction Equipment",
@@ -100,6 +101,8 @@ export default function OwnerAddequipmentPage() {
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter()
 
   // value can be null with the newer shadcn Select (Base UI), so fall back to ""
   const set = (key: keyof typeof initialForm) => (value: string | null) =>
@@ -229,6 +232,7 @@ export default function OwnerAddequipmentPage() {
       setTerms([""]);
       setPhoto(null);
       setPreview(null);
+      router.push("/my-equipments");
     } catch (err) {
       setError(
         err instanceof Error
