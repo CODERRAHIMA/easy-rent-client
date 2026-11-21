@@ -56,7 +56,10 @@ const Navbar = () => {
   };
 
   const navLinks = session?.user
-    ? [...baseLinks, { label: "Dashboard", href: `${session?.user.role}/dashboard` }]
+    ? [
+        ...baseLinks,
+        { label: "Dashboard", href: `${session?.user.role}/dashboard` },
+      ]
     : baseLinks;
 
   return (
@@ -151,7 +154,7 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  href="/dashboard"
+                  href={`/${session.user.role}/dashboard`}
                   onClick={() => setIsPopoverOpen(false)}
                   className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-[#7CB518]/10 hover:text-[#3F6212] lg:hidden"
                 >

@@ -3,19 +3,27 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Search, MapPin, SlidersHorizontal, X, ChevronLeft, ChevronRight,
-  PackageSearch, Handshake, ArrowRight,
+  Search,
+  MapPin,
+  SlidersHorizontal,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  PackageSearch,
+  Handshake,
+  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import type {
-  Equipment,
-  EquipmentFilters,
-} from "@/types/type";
+import type { Equipment, EquipmentFilters } from "@/types/type";
 import EquipmentCard from "@/components/equipment/EquipmentCard";
 
 const EQUIPMENT_API_URL = "http://localhost:5000/equipments";
@@ -30,21 +38,35 @@ const categories = [
   "Event Equipment",
 ];
 const rentalTypes = ["Daily", "Weekly", "Monthly"];
-const availabilityOptions = ["Available", "Unavailable"];
+const availabilityOptions = ["Available Only"];
 const sortOptions = [
-  { value: "newest", label: "Recently added" },
-  { value: "price-asc", label: "Price: low to high" },
-  { value: "price-desc", label: "Price: high to low" },
+  { value: "recently added", label: "recently added" },
+  { value: "price: low to high", label: "price: low to high" },
+  { value: "price: high to low", label: "price: high to low" },
 ];
 const initialFilters: EquipmentFilters = {
-  search: "", location: "", category: "", rentalType: "",
-  availability: "", minPrice: "", maxPrice: "", sort: "newest",
+  search: "",
+  location: "",
+  category: "",
+  rentalType: "",
+  availability: "",
+  minPrice: "",
+  maxPrice: "",
+  sort: "recently added",
 };
 
 const fieldCls =
   "h-11 rounded-xl border-[#1B1F16]/15 bg-white focus-visible:border-[#7CB518] focus-visible:ring-[#7CB518]/25";
 
-function Pill({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function Pill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
@@ -74,14 +96,34 @@ export default function AllEquipmentPage() {
 
     const loadEquipment = async () => {
       try {
-        const response = await fetch(EQUIPMENT_API_URL, {
-          signal: controller.signal,
+        setLoading(true);
+        setFetchError("");
+
+        // Create query parameters
+        const params = new URLSearchParams();
+
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value) {
+            params.set(key, value);
+          }
         });
+
+        const response = await fetch(
+          `${EQUIPMENT_API_URL}?${params.toString()}`,
+          {
+            signal: controller.signal,
+            cache: "no-store",
+          },
+        );
+
         if (!response.ok) {
-          throw new Error(`Unable to load equipment (HTTP ${response.status}).`);
+          throw new Error(
+            `Unable to load equipment (HTTP ${response.status}).`,
+          );
         }
 
         const result: unknown = await response.json();
+
         const records = Array.isArray(result)
           ? result
           : result &&
@@ -100,64 +142,77 @@ export default function AllEquipmentPage() {
           throw new Error("The equipment API returned an unexpected response.");
         }
 
-        const approvedRecords = records.filter(
-          (item): item is Equipment =>
-            item !== null &&
-            typeof item === "object" &&
-            "status" in item &&
-            item.status === "approved",
-        );
-
-        setEquipment(approvedRecords);
+        // Backend already filters approved equipments
+        setEquipment(records as Equipment[]);
       } catch (err) {
         if (controller.signal.aborted) return;
+
         setFetchError(
           err instanceof Error
             ? err.message
             : "Unable to load equipment. Please try again.",
         );
       } finally {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     void loadEquipment();
+
     return () => controller.abort();
-  }, []);
+  }, [filters]);
 
   const totalItems = equipment.length;
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
   const items = equipment.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const update = (key: keyof EquipmentFilters, value: string) => {
-    setFilters((f) => ({ ...f, [key]: f[key] === value && key !== "sort" ? "" : value }));
+    setFilters((f) => ({
+      ...f,
+      [key]: f[key] === value && key !== "sort" ? "" : value,
+    }));
     setPage(1);
   };
-  const reset = () => { setFilters(initialFilters); setPage(1); };
+  const reset = () => {
+    setFilters(initialFilters);
+    setPage(1);
+  };
 
-  const activeCount = [filters.category, filters.rentalType, filters.availability, filters.minPrice, filters.maxPrice]
-    .filter(Boolean).length;
+  const activeCount = [
+    filters.category,
+    filters.rentalType,
+    filters.availability,
+    filters.minPrice,
+    filters.maxPrice,
+  ].filter(Boolean).length;
 
   const handleSearch = () => {
     setPage(1);
-    console.log("Search with filters:", filters);
   };
 
   return (
     <main className="min-h-screen bg-[#F4F4F2] text-[#1B1F16]">
       <div className="mx-auto max-w-7xl py-8">
         {/* Header */}
-        <p className="text-sm font-bold uppercase tracking-widest text-[#3F6212]">All equipment</p>
+        <p className="text-sm font-bold uppercase tracking-widest text-[#3F6212]">
+          All equipment
+        </p>
         <h1 className="mt-3 max-w-xl text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
           Find the right equipment
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#1B1F16]/70">
-          Browse approved equipment from verified owners and rent it for the time you need.
+          Browse approved equipment from verified owners and rent it for the
+          time you need.
         </p>
 
         {/* Search bar */}
         <form
-          onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSearch();
+          }}
           className="mt-8 flex flex-col gap-2 rounded-2xl border border-[#1B1F16]/10 bg-white p-2 shadow-sm sm:flex-row sm:items-center"
         >
           <label className="flex flex-1 items-center gap-2 px-3 py-2">
@@ -165,7 +220,9 @@ export default function AllEquipmentPage() {
             <span className="sr-only">Equipment name</span>
             <input
               value={filters.search}
-              onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, search: e.target.value }))
+              }
               placeholder="Search by equipment name"
               className="w-full bg-transparent text-sm outline-none placeholder:text-[#1B1F16]/45"
             />
@@ -176,12 +233,17 @@ export default function AllEquipmentPage() {
             <span className="sr-only">Location</span>
             <input
               value={filters.location}
-              onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value }))}
+              onChange={(e) =>
+                setFilters((f) => ({ ...f, location: e.target.value }))
+              }
               placeholder="Location"
               className="w-full bg-transparent text-sm outline-none placeholder:text-[#1B1F16]/45"
             />
           </label>
-          <Button type="submit" className="h-12 rounded-xl bg-[#7CB518] px-8 text-sm font-bold text-[#1B1F16] hover:bg-[#6aa00f]">
+          <Button
+            type="submit"
+            className="h-12 rounded-xl bg-[#7CB518] px-8 text-sm font-bold text-[#1B1F16] hover:bg-[#6aa00f]"
+          >
             Search
           </Button>
         </form>
@@ -193,7 +255,11 @@ export default function AllEquipmentPage() {
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-extrabold">Filters</h2>
                 {activeCount > 0 && (
-                  <button type="button" onClick={reset} className="flex items-center gap-1 text-xs font-bold text-[#3F6212] hover:underline">
+                  <button
+                    type="button"
+                    onClick={reset}
+                    className="flex items-center gap-1 text-xs font-bold text-[#3F6212] hover:underline"
+                  >
                     <X className="h-3.5 w-3.5" aria-hidden /> Clear all
                   </button>
                 )}
@@ -211,10 +277,14 @@ export default function AllEquipmentPage() {
                           onClick={() => update("category", c)}
                           aria-pressed={active}
                           className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs transition ${
-                            active ? "bg-[#EEF4E0] font-bold text-[#3F6212]" : "text-[#1B1F16]/80 hover:bg-[#F4F4F2]"
+                            active
+                              ? "bg-[#EEF4E0] font-bold text-[#3F6212]"
+                              : "text-[#1B1F16]/80 hover:bg-[#F4F4F2]"
                           }`}
                         >
-                          <span className={`h-2 w-2 rounded-full ${active ? "bg-[#7CB518]" : "bg-[#1B1F16]/20"}`} />
+                          <span
+                            className={`h-2 w-2 rounded-full ${active ? "bg-[#7CB518]" : "bg-[#1B1F16]/20"}`}
+                          />
                           {c}
                         </button>
                       </li>
@@ -227,7 +297,13 @@ export default function AllEquipmentPage() {
                 <Label className="text-sm font-semibold">Rental type</Label>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {rentalTypes.map((t) => (
-                    <Pill key={t} active={filters.rentalType === t} onClick={() => update("rentalType", t)}>{t}</Pill>
+                    <Pill
+                      key={t}
+                      active={filters.rentalType === t}
+                      onClick={() => update("rentalType", t)}
+                    >
+                      {t}
+                    </Pill>
                   ))}
                 </div>
               </div>
@@ -235,9 +311,25 @@ export default function AllEquipmentPage() {
               <div>
                 <Label className="text-sm font-semibold">Price range</Label>
                 <div className="mt-3 flex items-center gap-2">
-                  <Input type="number" min={0} value={filters.minPrice} onChange={(e) => update("minPrice", e.target.value)} placeholder="Min" aria-label="Minimum price" className={fieldCls} />
+                  <Input
+                    type="number"
+                    min={0}
+                    value={filters.minPrice}
+                    onChange={(e) => update("minPrice", e.target.value)}
+                    placeholder="Min"
+                    aria-label="Minimum price"
+                    className={fieldCls}
+                  />
                   <span className="text-[#1B1F16]/40">-</span>
-                  <Input type="number" min={0} value={filters.maxPrice} onChange={(e) => update("maxPrice", e.target.value)} placeholder="Max" aria-label="Maximum price" className={fieldCls} />
+                  <Input
+                    type="number"
+                    min={0}
+                    value={filters.maxPrice}
+                    onChange={(e) => update("maxPrice", e.target.value)}
+                    placeholder="Max"
+                    aria-label="Maximum price"
+                    className={fieldCls}
+                  />
                 </div>
               </div>
 
@@ -245,7 +337,13 @@ export default function AllEquipmentPage() {
                 <Label className="text-sm font-semibold">Availability</Label>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {availabilityOptions.map((a) => (
-                    <Pill key={a} active={filters.availability === a} onClick={() => update("availability", a)}>{a}</Pill>
+                    <Pill
+                      key={a}
+                      active={filters.availability === a}
+                      onClick={() => update("availability", a)}
+                    >
+                      {a}
+                    </Pill>
                   ))}
                 </div>
               </div>
@@ -263,20 +361,37 @@ export default function AllEquipmentPage() {
                   onClick={() => setShowFilters((s) => !s)}
                   className="h-10 rounded-xl border-[#1B1F16]/15 bg-white font-bold hover:border-[#7CB518] hover:bg-white lg:hidden"
                 >
-                  <SlidersHorizontal className="h-4 w-4 text-[#3F6212]" aria-hidden />
+                  <SlidersHorizontal
+                    className="h-4 w-4 text-[#3F6212]"
+                    aria-hidden
+                  />
                   Filters{activeCount > 0 && ` (${activeCount})`}
                 </Button>
                 <p className="text-sm text-[#1B1F16]/70">
-                  <span className="font-bold text-[#1B1F16]">{totalItems}</span> items found
+                  <span className="font-bold text-[#1B1F16]">{totalItems}</span>{" "}
+                  items found
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="hidden text-sm text-[#1B1F16]/60 sm:block">Sort by</span>
-                <Select value={filters.sort} onValueChange={(v: string | null) => update("sort", v ?? "newest")}>
-                  <SelectTrigger className={`${fieldCls} w-[190px]`}><SelectValue placeholder="Sort by" /></SelectTrigger>
+                <span className="hidden text-sm text-[#1B1F16]/60 sm:block">
+                  Sort by
+                </span>
+                <Select
+                  value={filters.sort}
+                  onValueChange={(v: string | null) =>
+                    update("sort", v ?? "recently added")
+                  }
+                >
+                  <SelectTrigger className={`${fieldCls} w-[190px]`}>
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
                   <SelectContent>
-                    {sortOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                    {sortOptions.map((o) => (
+                      <SelectItem key={o.value} value={o.value}>
+                        {o.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -286,7 +401,10 @@ export default function AllEquipmentPage() {
             {loading ? (
               <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <li key={i} className="h-[380px] animate-pulse rounded-3xl bg-[#1B1F16]/5" />
+                  <li
+                    key={i}
+                    className="h-[380px] animate-pulse rounded-3xl bg-[#1B1F16]/5"
+                  />
                 ))}
               </ul>
             ) : fetchError ? (
@@ -302,9 +420,18 @@ export default function AllEquipmentPage() {
                 <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EEF4E0] text-[#3F6212]">
                   <PackageSearch className="h-7 w-7" aria-hidden />
                 </span>
-                <h3 className="mt-4 text-lg font-extrabold">No equipment found</h3>
-                <p className="mt-1 max-w-sm text-sm text-[#1B1F16]/60">Try changing your search or clearing some filters.</p>
-                <Button onClick={reset} className="mt-5 rounded-xl bg-[#7CB518] font-bold text-[#1B1F16] hover:bg-[#6aa00f]">Clear filters</Button>
+                <h3 className="mt-4 text-lg font-extrabold">
+                  No equipment found
+                </h3>
+                <p className="mt-1 max-w-sm text-sm text-[#1B1F16]/60">
+                  Try changing your search or clearing some filters.
+                </p>
+                <Button
+                  onClick={reset}
+                  className="mt-5 rounded-xl bg-[#7CB518] font-bold text-[#1B1F16] hover:bg-[#6aa00f]"
+                >
+                  Clear filters
+                </Button>
               </div>
             ) : (
               /* Cards: 3-column grid, equal height */
@@ -317,7 +444,10 @@ export default function AllEquipmentPage() {
 
             {/* Pagination (optional requirement) */}
             {!loading && items.length > 0 && (
-              <nav aria-label="Pagination" className="mt-10 flex items-center justify-center gap-2">
+              <nav
+                aria-label="Pagination"
+                className="mt-10 flex items-center justify-center gap-2"
+              >
                 <Button
                   variant="outline"
                   size="icon"
@@ -328,18 +458,22 @@ export default function AllEquipmentPage() {
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setPage(n)}
-                    aria-current={page === n ? "page" : undefined}
-                    className={`h-9 w-9 rounded-xl text-sm font-bold transition ${
-                      page === n ? "bg-[#7CB518] text-[#1B1F16]" : "bg-white text-[#1B1F16]/70 hover:bg-[#EEF4E0]"
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (n) => (
+                    <button
+                      key={n}
+                      onClick={() => setPage(n)}
+                      aria-current={page === n ? "page" : undefined}
+                      className={`h-9 w-9 rounded-xl text-sm font-bold transition ${
+                        page === n
+                          ? "bg-[#7CB518] text-[#1B1F16]"
+                          : "bg-white text-[#1B1F16]/70 hover:bg-[#EEF4E0]"
+                      }`}
+                    >
+                      {n}
+                    </button>
+                  ),
+                )}
                 <Button
                   variant="outline"
                   size="icon"
@@ -371,7 +505,7 @@ export default function AllEquipmentPage() {
             </div>
           </div>
           <Link
-            href="/contact"
+            href="#"
             className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1B1F16] px-6 text-sm font-bold text-white transition hover:bg-[#2d3326] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1B1F16]"
           >
             Contact Us <ArrowRight className="size-4" aria-hidden="true" />
