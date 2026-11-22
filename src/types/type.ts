@@ -44,7 +44,7 @@ export type OwnerRental = {
   startDate: string;
   endDate: string;
   requiredQuantity: number;
-  totalAmount: number;
+  totalAmount?: number | null;
   paymentStatus: RentalPaymentStatus;
   bookingStatus: RentalBookingStatus;
 };

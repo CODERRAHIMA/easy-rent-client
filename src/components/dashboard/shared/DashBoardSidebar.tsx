@@ -41,20 +41,20 @@ type SidebarItem = {
 
 const roleBasedSidebarItems: Record<DashboardRole, SidebarItem[]> = {
   customer: [
-    { label: "Dashboard", href: "/customer/dashboard", icon: LayoutDashboard },
+    { label: "Overview", href: "/customer/dashboard", icon: LayoutDashboard },
     { label: "My Rentals", href: "/customer/my-rentals", icon: CalendarCheck },
     { label: "Favorites", href: "/customer/favorites", icon: Heart },
     { label: "Profile", href: "/customer/profile", icon: User },
   ],
   owner: [
-    { label: "Dashboard", href: "/owner/dashboard", icon: LayoutDashboard },
+    { label: "Overview", href: "/owner/dashboard", icon: LayoutDashboard },
     { label: "Add Equipment", href: "/owner/add-equipment", icon: PlusCircle },
     { label: "My Equipments", href: "/owner/my-equipment", icon: Package },
     { label: "My Equipment Rentals", href: "/owner/my-equipment-rentals", icon: ClipboardList },
     { label: "Profile", href: "/owner/profile", icon: User },
   ],
   admin: [
-    { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+    { label: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     { label: "All Users", href: "/admin/all-users", icon: Users },
     { label: "All Equipments", href: "/admin/all-equipments", icon: Boxes },
     { label: "All Rentals", href: "/admin/all-rentals", icon: Receipt },

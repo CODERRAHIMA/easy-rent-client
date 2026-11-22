@@ -63,6 +63,9 @@ const formatDate = (value: string) =>
 const getDays = (start: string, end: string) =>
   Math.max(1, Math.round((+new Date(end) - +new Date(start)) / MS_PER_DAY) + 1);
 
+const getValidAmount = (value: unknown): number | null =>
+  typeof value === "number" && Number.isFinite(value) ? value : null;
+
 /* ---------- small components ---------- */
 
 function Badge({ label, badge, dot }: RentalBadgeStyle) {
@@ -77,6 +80,7 @@ function Badge({ label, badge, dot }: RentalBadgeStyle) {
 const RentalRow = memo(function RentalRow({ rental }: { rental: OwnerRental }) {
   const { customer, equipment } = rental;
   const days = getDays(rental.startDate, rental.endDate);
+  const totalAmount = getValidAmount(rental.totalAmount);
 
   return (
     <tr className="border-b border-[#1B1F16]/5 transition last:border-0 hover:bg-[#F4F4F2]/60">
@@ -134,7 +138,7 @@ const RentalRow = memo(function RentalRow({ rental }: { rental: OwnerRental }) {
 
       <td className="whitespace-nowrap px-5 py-4 font-bold">
         {CURRENCY}
-        {rental.totalAmount.toLocaleString()}
+        {totalAmount === null ? "—" : totalAmount.toLocaleString()}
       </td>
 
       <td className="px-5 py-4">
@@ -229,17 +233,24 @@ export default function OwnerMyEquipmentRentalsPage() {
     (totals, rental) => {
       if (rental.bookingStatus === "confirmed") totals.confirmed += 1;
       if (rental.bookingStatus === "completed") totals.completed += 1;
-      if (rental.paymentStatus === "paid") totals.earnings += rental.totalAmount;
+      if (rental.paymentStatus === "paid") {
+        const amount = getValidAmount(rental.totalAmount);
+        if (amount === null) totals.hasUnavailableEarnings = true;
+        else totals.earnings += amount;
+      }
       return totals;
     },
-    { confirmed: 0, completed: 0, earnings: 0 },
+    { confirmed: 0, completed: 0, earnings: 0, hasUnavailableEarnings: false },
   );
 
   const stats = [
     { label: "Total rentals", value: rentals.length.toLocaleString() },
     { label: "Active (confirmed)", value: summary.confirmed.toLocaleString() },
     { label: "Completed", value: summary.completed.toLocaleString() },
-    { label: "Total earnings", value: `${CURRENCY}${summary.earnings.toLocaleString()}` },
+    {
+      label: "Total earnings",
+      value: `${CURRENCY}${summary.hasUnavailableEarnings ? "—" : summary.earnings.toLocaleString()}`,
+    },
   ];
 
   const rows = rentals.filter((r) => filter === "all" || r.bookingStatus === filter);
