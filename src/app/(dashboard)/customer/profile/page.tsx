@@ -1,11 +1,8 @@
-import React from 'react';
+import ProfileDetails from "@/components/profile/ProfileDetails";
+
 
 const CustomerProfilePage = () => {
-  return (
-    <div>
-      profile
-    </div>
-  );
+  return <ProfileDetails />;
 };
 
 export default CustomerProfilePage;

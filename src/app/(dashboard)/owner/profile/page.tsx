@@ -1,11 +1,8 @@
-import React from 'react';
+import ProfileDetails from "@/components/profile/ProfileDetails";
 
 const OwnerProfilePage = () => {
-    return (
-        <div>
-            owner profile
-        </div>
-    );
+  return <ProfileDetails />;
 };
 
 export default OwnerProfilePage;
+
