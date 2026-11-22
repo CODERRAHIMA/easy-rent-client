@@ -458,14 +458,14 @@ function ProfileEditor({
             variant="outline"
             onClick={handleReset}
             disabled={!dirty || saving}
-            className="h-12 rounded-xl border-[#1B1F16]/15 bg-white px-6 font-bold hover:bg-[#F4F4F2]"
+            className="h-12 rounded-xl border-[#1B1F16]/15 bg-white px-6 font-bold hover:bg-[#F4F4F2] disabled:border-gray-700"
           >
             Discard changes
           </Button>
           <Button
             type="submit"
             disabled={!dirty || saving}
-            className="h-12 rounded-xl bg-[#7CB518] px-8 text-sm font-bold text-[#1B1F16] hover:bg-[#6aa00f]"
+            className="h-12 rounded-xl bg-[#7CB518] px-8 text-sm font-bold text-[#1B1F16] hover:bg-[#6aa00f] disabled:border-gray-700"
           >
             {saving ? (
               <>
