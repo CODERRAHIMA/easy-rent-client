@@ -114,7 +114,7 @@ const Categories = () => {
                 className="w-[240px] shrink-0 snap-start sm:w-[243px]"
               >
                 <Link
-                  href={`/category/${slug}`}
+                  href={`/all-equipment?category=${encodeURIComponent(name)}`}
                   className="group flex min-h-44 w-full flex-col gap-5 rounded-2xl border border-[#1B1F16]/[0.08] bg-white p-5 shadow-[0_2px_8px_rgba(27,31,22,0.04)] transition duration-200 hover:-translate-y-1 hover:border-[#7CB518]/50 hover:shadow-[0_12px_28px_rgba(27,31,22,0.09)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#557A24] sm:p-6"
                 >
                   <div className="flex justify-between">

@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import EquipmentCard from "@/components/equipment/EquipmentCard";
+import FeaturedEquipmentGrid from "@/components/home/FeaturedEquipmentGrid";
 import type { Equipment } from "@/types/type";
 
 const FEATURED_EQUIPMENT_API_URL =
-  "http://localhost:5000/equipments/featured";
+  `${process.env.API_URL}/equipments/featured`;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -122,11 +123,11 @@ async function FeaturedEquipment() {
             No approved equipment is available yet.
           </p>
         ) : (
-          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 px-8">
+          <FeaturedEquipmentGrid>
             {equipment.map((item) => (
               <EquipmentCard key={item._id} item={item} />
             ))}
-          </ul>
+          </FeaturedEquipmentGrid>
         )}
       </div>
     </section>

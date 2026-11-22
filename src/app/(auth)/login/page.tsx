@@ -89,7 +89,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-rem(200px))] flex items-center justify-center bg-[#F4F4F3] px-4 py-12">
+    <div className="flex min-h-[60vh] items-center justify-center bg-[#F4F4F3] px-4 py-12">
       <motion.div
         initial="hidden"
         animate="visible"

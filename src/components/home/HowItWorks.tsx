@@ -39,7 +39,7 @@ export default function HowItWorks() {
   const flow = flows[tab];
 
   return (
-    <section className="bg-white text-[#1B1F16]">
+    <section id="how-it-works" className="scroll-mt-24 bg-white text-[#1B1F16]">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
         {/* Header */}
         <motion.div

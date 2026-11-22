@@ -216,7 +216,7 @@ export default function OwnerAddequipmentPage() {
       };
 
       const token = await getTokenFromClient();
-      const response = await fetch("http://localhost:5000/equipments", {
+      const response = await fetch(`${process.env.API_URL}/equipments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

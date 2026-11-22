@@ -23,11 +23,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import type { DashboardRole } from "@/types/type";
 
 export type NavUserData = {
   name: string;
   email: string;
   image?: string | null;
+  role: DashboardRole;
 };
 
 export function DashboardUser({ user }: { user: NavUserData }) {
@@ -86,7 +88,7 @@ export function DashboardUser({ user }: { user: NavUserData }) {
 
             <DropdownMenuGroup>
               <DropdownMenuItem
-                render={<Link href="/dashboard/profile" />}
+                render={<Link href={`/${user.role}/profile`} />}
                 className="cursor-pointer gap-2"
               >
                 <Settings className="size-4" />

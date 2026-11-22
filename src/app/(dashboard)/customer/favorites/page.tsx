@@ -8,7 +8,7 @@ import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type { Equipment, EquipmentRentalType } from "@/types/type";
 
 const CURRENCY = "৳";
-const API_URL = "http://localhost:5000";
+const API_URL = `${process.env.API_URL}`;
 
 type Favourite = {
   _id: string;
@@ -122,7 +122,7 @@ const FavouriteCard = memo(function FavouriteCard({
 
 function CardsSkeleton() {
   return (
-    <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3" aria-label="Loading favourites">
+    <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-label="Loading favourites">
       {Array.from({ length: 3 }).map((_, i) => (
         <li key={i} className="h-[380px] animate-pulse rounded-3xl bg-[#1B1F16]/5" />
       ))}
@@ -277,7 +277,7 @@ export default function CustomerFavouritesPage() {
       ) : favourites.length === 0 ? (
         <EmptyState />
       ) : (
-        <ul className="grid gap-6 sm:grid-cols-3 xl:grid-cols-4 mt-10">
+        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {favourites.map(({ _id, equipment }) => (
             <FavouriteCard
               key={_id}

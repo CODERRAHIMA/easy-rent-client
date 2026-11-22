@@ -5,7 +5,7 @@ import EquipmentCard from "@/components/equipment/EquipmentCard";
 import { parseFilters, parsePage, SearchParams } from "@/components/utils/filters";
 import EquipmentBrowser from "@/components/equipment/EquipmentBrowser";
 
-const EQUIPMENT_API_URL = "http://localhost:5000/equipments";
+const EQUIPMENT_API_URL = `${process.env.API_URL}/equipments`;
 const PAGE_SIZE = 9;
 
 function getEquipmentRecords(result: unknown): Equipment[] | null {
@@ -71,7 +71,7 @@ export default async function AllEquipmentPage({
 
   return (
     <main className="min-h-screen bg-[#F4F4F2] text-[#1B1F16]">
-      <div className="mx-auto max-w-7xl py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <p className="text-sm font-bold uppercase tracking-widest text-[#3F6212]">
           All equipment
@@ -115,7 +115,7 @@ export default async function AllEquipmentPage({
             </div>
           </div>
           <Link
-            href="#"
+            href="mailto:support@easyrent.com?subject=Custom%20rental%20request"
             className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1B1F16] px-6 text-sm font-bold text-white transition hover:bg-[#2d3326] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1B1F16]"
           >
             Contact Us <ArrowRight className="size-4" aria-hidden="true" />

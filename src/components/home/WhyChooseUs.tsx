@@ -15,7 +15,7 @@ export default function WhyChooseUs() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="bg-[#1B1F16] py-10">
+    <section id="why-choose-us" className="scroll-mt-24 bg-[#1B1F16] py-10">
       <div className="mx-auto grid max-w-7xl items-center gap-8 rounded-[2rem]  p-6 text-[#F4F4F2] sm:p-8 lg:grid-cols-[0.85fr_1.6fr] lg:gap-10 lg:p-10">
         {/* Left: heading */}
         <motion.div
@@ -31,7 +31,7 @@ export default function WhyChooseUs() {
             We provide reliable, affordable and hassle-free equipment rental for everyone.
           </p>
           <Link
-            href="/about"
+            href="/#how-it-works"
             className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#7CB518] px-5 py-3 text-sm font-bold text-[#1B1F16] transition hover:bg-[#6aa00f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7CB518]"
           >
             Learn more <ArrowRight className="h-4 w-4" aria-hidden />

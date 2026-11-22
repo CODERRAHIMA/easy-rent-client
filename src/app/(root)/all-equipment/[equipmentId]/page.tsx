@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import type { EquipmentDetails, EquipmentRentalType } from "@/types/type";
 import EquipmentDetailsView from "@/components/equipment/EquipmentDetailsView";
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
+import { auth } from "@/lib/auth";
 
-const EQUIPMENT_API_URL = "http://localhost:5000/equipments";
+const EQUIPMENT_API_URL = `${process.env.API_URL}/equipments`;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -58,6 +61,10 @@ async function fetchEquipment(
       cache: "no-store",
     });
 
+    if (response.status === 401) {
+      return { error: "Unauthorized" };
+    }
+
     if (!response.ok) {
       return {
         error:
@@ -83,10 +90,22 @@ export default async function EquipmentDetailsPage({
 }: {
   params: Promise<{ equipmentId: string }>;
 }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/login");
+  }
+
   const { equipmentId } = await params;
   const result = await fetchEquipment(equipmentId);
 
   if ("error" in result) {
+    if (result.error === "Unauthorized") {
+      redirect("/login");
+    }
+
     return (
       <main className="min-h-screen bg-[#F4F4F2] px-5 py-20 text-center text-[#1B1F16]">
         <p role="alert" className="text-sm font-semibold text-red-700">

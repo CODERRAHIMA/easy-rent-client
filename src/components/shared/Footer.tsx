@@ -11,8 +11,8 @@ import {
 const quickLinks = [
   { label: "Home", href: "/" },
   { label: "All Equipment", href: "/all-equipment" },
-  { label: "About us", href: "/about" },
-  { label: "Contact us", href: "/contact" },
+  { label: "About us", href: "/#why-choose-us" },
+  { label: "Contact us", href: "/#contact" },
   { label: "How it works", href: "/#how-it-works" },
 ];
 
@@ -93,7 +93,7 @@ export default function Footer() {
         </nav>
 
         {/* Contact */}
-        <div>
+        <div id="contact" className="scroll-mt-24">
           <h3 className="text-sm font-bold uppercase tracking-widest text-[#7CB518]">
             Contact us
           </h3>
@@ -125,18 +125,12 @@ export default function Footer() {
           <p>© 2026 EasyRent. All rights reserved.</p>
 
           <div className="flex items-center gap-6">
-            <Link
-              href="/"
-              className="transition-colors hover:text-[#7CB518]"
-            >
+            <span className="text-[#F4F4F2]/60">
               Privacy Policy
-            </Link>
-            <Link
-              href="/"
-              className="transition-colors hover:text-[#7CB518]"
-            >
+            </span>
+            <span className="text-[#F4F4F2]/60">
               Terms &amp; Conditions
-            </Link>
+            </span>
           </div>
         </div>
       </div>

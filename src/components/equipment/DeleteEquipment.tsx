@@ -19,7 +19,7 @@ type DeleteEquipmentProps = {
   onError: (message: string) => void;
 };
 
-const API_URL = "http://localhost:5000/equipments";
+const API_URL = `${process.env.API_URL}/equipments`;
 
 export default function DeleteEquipment({
   equipment,

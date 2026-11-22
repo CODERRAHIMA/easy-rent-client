@@ -13,7 +13,7 @@ import type {
 } from "@/types/type";
 
 const CURRENCY = "৳";
-const API_URL = "http://localhost:5000/bookings";
+const API_URL = `${process.env.API_URL}/bookings`;
 const MS_PER_DAY = 86_400_000;
 
 const paymentStyle: Record<RentalPaymentStatus, RentalBadgeStyle> = {

@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
-const API_URL = "http://localhost:5000";
+const API_URL = `${process.env.API_URL}`;
 const PHONE_PATTERN = /^\+?[0-9\s-]{7,15}$/;
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5 MB
 

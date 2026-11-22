@@ -14,7 +14,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
-const API_URL = "http://localhost:5000";
+const API_URL = `${process.env.API_URL}`;
 
 // What one user looks like (rename the fields if your database uses different names)
 type User = {

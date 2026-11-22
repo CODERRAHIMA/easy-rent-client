@@ -13,7 +13,7 @@ import EditEquipmentDialog from "@/components/equipment/EditEquipment";
 
 const CURRENCY = "৳";
 
-const API_URL = "http://localhost:5000/equipments";
+const API_URL = `${process.env.API_URL}/equipments`;
 
 const unit = {
   Daily: "day",
@@ -229,7 +229,7 @@ export default function OwnerMyEquipmentsPage() {
 
               {equipment.length === 0 && (
                 <Link
-                  href="/dashboard/owner/add-equipment"
+                  href="/owner/add-equipment"
                   className="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-[#7CB518] px-6 text-sm font-bold text-[#1B1F16] hover:bg-[#6aa00f]"
                 >
                   <Plus className="h-4 w-4" aria-hidden />

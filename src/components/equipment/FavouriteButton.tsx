@@ -6,7 +6,7 @@ import { useSession } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 
-const API_URL = "http://localhost:5000";
+const API_URL = `${process.env.API_URL}`;
 
 export default function FavouriteButton({
   equipmentId,
