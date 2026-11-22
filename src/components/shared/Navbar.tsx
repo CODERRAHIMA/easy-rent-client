@@ -134,9 +134,14 @@ const Navbar = () => {
               className="w-[220px] overflow-hidden rounded-2xl border-slate-200 bg-slate-100 p-0 shadow-xl shadow-slate-900/10"
             >
               <PopoverHeader className="border-b border-slate-200 px-4 py-3 text-left">
-                <PopoverTitle className="text-sm font-bold text-slate-900">
-                  {session.user.name}
-                </PopoverTitle>
+                <div className="flex items-center justify-between gap-2">
+                  <PopoverTitle className="text-sm font-bold text-slate-900">
+                    {session.user.name}
+                  </PopoverTitle>
+                  <span className="shrink-0 rounded-full border border-[#84b817]/30 bg-[#84b817]/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#5b820b]">
+                    {session.user.role}
+                  </span>
+                </div>
                 <PopoverDescription className="mt-1 break-all text-xs text-slate-500">
                   {session.user.email}
                 </PopoverDescription>
