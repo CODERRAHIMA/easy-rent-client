@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { ArrowRight, CalendarClock, Heart, MapPin, Wrench } from "lucide-react";
 import type { Equipment, EquipmentRentalType } from "@/types/type";
+import FavouriteButton from "./FavouriteButton";
+import { authClient } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const CURRENCY = "৳";
 
@@ -10,7 +14,12 @@ const unit: Record<EquipmentRentalType, string> = {
   Monthly: "month",
 };
 
-export default function EquipmentCard({ item }: { item: Equipment }) {
+export default async function EquipmentCard({ item }: { item: Equipment }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const isCustomer = session?.user?.role === "customer";
   const available = item.availableQuantity > 0;
 
   return (
@@ -41,14 +50,7 @@ export default function EquipmentCard({ item }: { item: Equipment }) {
           {available ? "Available" : "Unavailable"}
         </span>
 
-        {/* favourite button */}
-        <button
-          type="button"
-          aria-label={`Add ${item.name} to favorites`}
-          className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-white/95 text-[#1B1F16] shadow-md transition hover:bg-white"
-        >
-          <Heart className="size-5" aria-hidden="true" />
-        </button>
+        {isCustomer && <FavouriteButton equipmentId={String(item._id)} />}
       </div>
 
       <div className="flex flex-1 flex-col p-5">
