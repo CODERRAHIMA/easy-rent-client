@@ -88,3 +88,9 @@ export type EquipmentFilters = {
   maxPrice: string;
   sort: string;
 };
+
+export type TcommonAPIResponse<T> ={
+  success: boolean,
+  message: string,
+  data: T,
+}
