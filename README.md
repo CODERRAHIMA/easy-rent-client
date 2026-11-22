@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# EasyRent
 
-First, run the development server:
+An equipment rental platform where customers can find and rent equipment, owners can list and manage their equipment, and admins can manage the platform.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Live URL
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+https://easy-rent-client.vercel.app/
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Key Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Browse available equipment, view details, and make rental bookings.
+- Customer dashboard with rental history, favorites, and profile management.
+- Owner dashboard to add, update, and manage equipment and rentals.
+- Admin dashboard to manage users, equipment, and rentals.
+- User authentication with Better Auth.
+- Secure checkout and payment processing with Stripe.
+- Role-based access control for customers, owners, and admins.
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+### Frontend
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Better Auth
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Backend
+- Node.js
+- Express 5
+- MongoDB
+- Stripe
+- JWT Authentication (jose)
+- CORS
+- dotenv
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## NPM Packages
 
-## Deploy on Vercel
+### Frontend Dependencies
+- `@base-ui/react`
+- `@better-auth/mongo-adapter`
+- `better-auth`
+- `class-variance-authority`
+- `cn`
+- `framer-motion`
+- `lucide-react`
+- `mongodb`
+- `next`
+- `react`
+- `react-dom`
+- `react-hot-toast`
+- `react-icons`
+- `shadcn`
+- `@tailwindcss/turbopack`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Backend Dependencies
+- `cors`
+- `dotenv`
+- `express`
+- `jose`
+- `mongodb`
+- `stripe`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Development Dependencies
+- `@types/node`
+- `@types/react`
+- `@types/react-dom`
+- `babel-plugin-react-compiler`
+- `eslint`
+- `eslint-config-next`
+- `nodemon`
+- `tailwindcss`
+- `typescript`
