@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { signOut } from "@/lib/auth-client";
 
 import {
   Avatar,
@@ -34,6 +37,25 @@ export type NavUserData = {
 
 export function DashboardUser({ user }: { user: NavUserData }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut();
+
+      if (error) {
+        toast.error(error.message || "Unable to log out. Please try again.");
+        return;
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to log out. Please try again.",
+      );
+    }
+  };
 
   const userInfo = (
     <>
@@ -99,7 +121,10 @@ export function DashboardUser({ user }: { user: NavUserData }) {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer gap-2 text-red-500 focus:bg-red-50 focus:text-red-600">
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                className="cursor-pointer gap-2 text-red-500 focus:bg-red-50 focus:text-red-600"
+              >
                 <LogOut className="size-4" />
                 Log out
               </DropdownMenuItem>

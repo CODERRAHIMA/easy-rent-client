@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { fadeUpVariants, staggerVariants } from "../utils/animation";
 import {
@@ -113,26 +112,15 @@ const Categories = () => {
                 variants={fadeUpVariants(reduceMotion, 20, 0.45)}
                 className="w-[240px] shrink-0 snap-start sm:w-[243px]"
               >
-                <Link
-                  href={`/all-equipment?category=${encodeURIComponent(name)}`}
-                  className="group flex min-h-44 w-full flex-col gap-5 rounded-2xl border border-[#1B1F16]/[0.08] bg-white p-5 shadow-[0_2px_8px_rgba(27,31,22,0.04)] transition duration-200 hover:-translate-y-1 hover:border-[#7CB518]/50 hover:shadow-[0_12px_28px_rgba(27,31,22,0.09)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#557A24] sm:p-6"
-                >
-                  <div className="flex justify-between">
-                    <span
-                      className={`flex size-16 shrink-0 items-center justify-center rounded-2xl ${iconBackground} ${iconColor} transition-transform duration-200 group-hover:scale-105`}
-                      aria-hidden="true"
-                    >
-                      <Icon className="size-8" strokeWidth={1.7} />
-                    </span>
-                    <span
-                      className="text-xl text-[#1B1F16]/30 transition-all group-hover:translate-x-1 group-hover:text-[#557A24]"
-                      aria-hidden="true"
-                    >
-                      →
-                    </span>
-                  </div>
+                <article className="flex min-h-44 w-full flex-col gap-5 rounded-2xl border border-[#1B1F16]/[0.08] bg-white p-5 shadow-[0_2px_8px_rgba(27,31,22,0.04)] sm:p-6">
+                  <span
+                    className={`flex size-16 shrink-0 items-center justify-center rounded-2xl ${iconBackground} ${iconColor}`}
+                    aria-hidden="true"
+                  >
+                    <Icon className="size-8" strokeWidth={1.7} />
+                  </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-base font-bold text-[#1B1F16] transition-colors group-hover:text-[#557A24]">
+                    <span className="block text-base font-bold text-[#1B1F16]">
                       {name}
                     </span>
                     <span className="mt-1 block text-sm leading-5 text-[#1B1F16]/60">
@@ -142,7 +130,7 @@ const Categories = () => {
                       {itemCount} items
                     </span>
                   </span>
-                </Link>
+                </article>
               </motion.div>
             ),
           )}
