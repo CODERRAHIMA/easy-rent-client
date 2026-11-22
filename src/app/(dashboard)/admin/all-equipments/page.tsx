@@ -7,19 +7,7 @@ import { authClient } from "@/lib/auth-client";
 import type { EquipmentStatus, OwnerEquipment } from "@/types/type";
 import DeleteEquipment from "@/components/equipment/DeleteEquipment";
 import EditEquipmentDialog from "@/components/equipment/EditEquipment";
-
-/**
- * Admin > All Equipment page
- * Put this file at: app/admin/all-equipment/page.tsx
- * shadcn components needed: npx shadcn@latest add input
- *
- * It reuses your DeleteEquipment and EditEquipmentDialog components from the owner page.
- * Make sure your backend lets an ADMIN update and delete any equipment (not only the owner).
- *
- * Backend (change these to match your server):
- *   GET    /equipments/admin/all?email=<admin email>        -> { data: [ ...equipment ] }
- *   PATCH  /equipments/<id>/status?email=<admin email>      body: { status }
- */
+import Link from "next/link";
 
 const CURRENCY = "৳";
 const API_URL = "http://localhost:5000/equipments";
@@ -31,7 +19,6 @@ type AdminEquipment = OwnerEquipment & {
 
 const unit = { Daily: "day", Weekly: "week", Monthly: "month" } as const;
 
-// Label + colors for each status
 const statusStyle: Record<EquipmentStatus, { label: string; badge: string; dot: string }> = {
   approved: { label: "Approved", badge: "bg-[#EEF4E0] text-[#3F6212]", dot: "bg-[#7CB518]" },
   pending: { label: "Pending", badge: "bg-amber-100 text-amber-800", dot: "bg-amber-500" },
@@ -40,16 +27,13 @@ const statusStyle: Record<EquipmentStatus, { label: string; badge: string; dot: 
 
 const statuses: EquipmentStatus[] = ["pending", "approved", "rejected"];
 
-// Same look for all 4 action buttons
 const actionBtn =
   "inline-flex size-9 items-center justify-center rounded-lg border border-[#1B1F16]/10 bg-white text-[#1B1F16]/70 transition disabled:cursor-not-allowed disabled:opacity-40";
 
 export default function AdminAllEquipmentsPage() {
-  // 1. Get the logged in admin
   const { data: session, isPending } = authClient.useSession();
   const email = session?.user?.email;
 
-  // 2. States
   const [equipment, setEquipment] = useState<AdminEquipment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -58,7 +42,6 @@ export default function AdminAllEquipmentsPage() {
   const [editTarget, setEditTarget] = useState<AdminEquipment | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminEquipment | null>(null);
 
-  // 3. Load all equipment when the page opens
   useEffect(() => {
     const fetchEquipment = async () => {
       if (isPending) return;
@@ -87,7 +70,6 @@ export default function AdminAllEquipmentsPage() {
     fetchEquipment();
   }, [email, isPending]);
 
-  // 4. Approve or reject an equipment
   const handleStatusChange = async (item: AdminEquipment, newStatus: EquipmentStatus) => {
     try {
       setError("");
@@ -103,14 +85,12 @@ export default function AdminAllEquipmentsPage() {
         throw new Error(result.message || "Failed to update status");
       }
 
-      // Show the new status on the screen
       setEquipment(equipment.map((e) => (e._id === item._id ? { ...e, status: newStatus } : e)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update status");
     }
   };
 
-  // 5. Search + status filter
   const text = search.trim().toLowerCase();
   const filteredEquipment = equipment.filter((item) => {
     const matchesStatus = statusFilter === "all" || item.status === statusFilter;
@@ -121,7 +101,6 @@ export default function AdminAllEquipmentsPage() {
     return matchesStatus && matchesSearch;
   });
 
-  // 6. Numbers for the cards
   const stats = [
     { label: "Total equipment", value: equipment.length },
     { label: "Pending", value: equipment.filter((e) => e.status === "pending").length },
@@ -208,7 +187,8 @@ export default function AdminAllEquipmentsPage() {
                       <tr key={item._id} className="border-b border-[#1B1F16]/5 last:border-0 hover:bg-[#F4F4F2]/60">
                         {/* Equipment */}
                         <td className="px-5 py-4">
-                          <div className="flex items-center gap-3">
+                          <Link href={`/all-equipment/${item._id}`}>
+                            <div className="flex items-center gap-3">
                             <div className="size-12 shrink-0 overflow-hidden rounded-xl bg-[#EEF4E0]">
                               {item.image ? (
                                 // eslint-disable-next-line @next/next/no-img-element
@@ -226,6 +206,7 @@ export default function AdminAllEquipmentsPage() {
                               </p>
                             </div>
                           </div>
+                          </Link>
                         </td>
 
                         <td className="px-5 py-4 text-[#1B1F16]/80">{item.category}</td>

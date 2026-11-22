@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useState,
   type ChangeEvent,
   type FormEvent,
@@ -98,10 +99,14 @@ export default function EquipmentDetailsView({
   const [open, setOpen] = useState(false);
   const [booking, setBooking] = useState<BookingForm>(emptyBooking);
   const [bookingError, setBookingError] = useState("");
+  const [today, setToday] = useState("");
 
   const available = equipment.availableQuantity > 0;
   const ownerPhoto = equipment.owner.photo || equipment.owner.image;
-  const today = new Date().toISOString().split("T")[0];
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split("T")[0]);
+  }, []);
 
   const setField =
     (key: keyof BookingForm) =>
