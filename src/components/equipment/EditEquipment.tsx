@@ -22,7 +22,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
-const API_URL = `${process.env.API_URL}/equipments`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/equipments`;
 
 type Item = {
   _id: string;

@@ -5,7 +5,7 @@ import EquipmentCard from "@/components/equipment/EquipmentCard";
 import { parseFilters, parsePage, SearchParams } from "@/components/utils/filters";
 import EquipmentBrowser from "@/components/equipment/EquipmentBrowser";
 
-const EQUIPMENT_API_URL = `${process.env.API_URL}/equipments`;
+const EQUIPMENT_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/equipments`;
 const PAGE_SIZE = 9;
 
 function getEquipmentRecords(result: unknown): Equipment[] | null {

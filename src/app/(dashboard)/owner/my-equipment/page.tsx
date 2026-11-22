@@ -13,7 +13,7 @@ import EditEquipmentDialog from "@/components/equipment/EditEquipment";
 
 const CURRENCY = "৳";
 
-const API_URL = `${process.env.API_URL}/equipments`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/equipments`;
 
 const unit = {
   Daily: "day",

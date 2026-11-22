@@ -6,7 +6,7 @@ import FeaturedEquipmentGrid from "@/components/home/FeaturedEquipmentGrid";
 import type { Equipment } from "@/types/type";
 
 const FEATURED_EQUIPMENT_API_URL =
-  `${process.env.API_URL}/equipments/featured`;
+  `${process.env.NEXT_PUBLIC_API_URL}/equipments/featured`;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;

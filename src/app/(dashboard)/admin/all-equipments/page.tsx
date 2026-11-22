@@ -11,7 +11,7 @@ import EditEquipmentDialog from "@/components/equipment/EditEquipment";
 import Link from "next/link";
 
 const CURRENCY = "৳";
-const API_URL = `${process.env.API_URL}/equipments`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/equipments`;
 
 // An equipment item, plus the owner info that the backend sends
 type AdminEquipment = OwnerEquipment & {

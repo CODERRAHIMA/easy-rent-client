@@ -7,7 +7,7 @@ import EquipmentDetailsView from "@/components/equipment/EquipmentDetailsView";
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
 import { auth } from "@/lib/auth";
 
-const EQUIPMENT_API_URL = `${process.env.API_URL}/equipments`;
+const EQUIPMENT_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/equipments`;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;

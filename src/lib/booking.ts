@@ -1,7 +1,7 @@
 
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
-const API_BASE_URL = `${process.env.API_URL}`;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
 type CreateBookingPayload = {
   equipmentId: string;
