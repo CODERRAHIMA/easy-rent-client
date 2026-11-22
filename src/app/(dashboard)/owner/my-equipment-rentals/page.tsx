@@ -3,6 +3,7 @@
 import { memo, useEffect, useState } from "react";
 import { CalendarDays, CalendarX2, Wrench } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type {
   OwnerRental,
   RentalApiResult,
@@ -44,7 +45,10 @@ async function requestJson(
   init: RequestInit,
   fallbackMessage: string,
 ): Promise<RentalApiResult> {
-  const response = await fetch(url, init);
+  const token = await getTokenFromClient();
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${token}`);
+  const response = await fetch(url, { ...init, headers });
   const result: RentalApiResult = await response.json();
   if (!response.ok) throw new Error(result.message || fallbackMessage);
   return result;

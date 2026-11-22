@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Check, Pencil, Trash2, Wrench, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type { EquipmentStatus, OwnerEquipment } from "@/types/type";
 import DeleteEquipment from "@/components/equipment/DeleteEquipment";
 import EditEquipmentDialog from "@/components/equipment/EditEquipment";
@@ -52,7 +53,12 @@ export default function AdminAllEquipmentsPage() {
       }
 
       try {
-        const response = await fetch(`${API_URL}/admin/all?email=${encodeURIComponent(email)}`);
+        const token = await getTokenFromClient();
+        const response = await fetch(`${API_URL}/admin/all?email=${encodeURIComponent(email)}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const result = await response.json();
 
         if (!response.ok) {
@@ -73,10 +79,14 @@ export default function AdminAllEquipmentsPage() {
   const handleStatusChange = async (item: AdminEquipment, newStatus: EquipmentStatus) => {
     try {
       setError("");
+      const token = await getTokenFromClient();
 
       const response = await fetch(`${API_URL}/${item._id}/status?email=${encodeURIComponent(email!)}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ status: newStatus }),
       });
       const result = await response.json();

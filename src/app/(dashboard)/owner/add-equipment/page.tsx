@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const categories = [
   "Construction Equipment",
@@ -214,9 +215,13 @@ export default function OwnerAddequipmentPage() {
         updatedAt: now,
       };
 
+      const token = await getTokenFromClient();
       const response = await fetch("http://localhost:5000/equipments", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 

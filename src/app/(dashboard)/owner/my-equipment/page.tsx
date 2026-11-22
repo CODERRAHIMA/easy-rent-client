@@ -7,6 +7,7 @@ import { Plus, Eye, Pencil, Trash2, Wrench, PackageOpen } from "lucide-react";
 
 import DeleteEquipment from "@/components/equipment/DeleteEquipment";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type { EquipmentStatus, OwnerEquipment } from "@/types/type";
 import EditEquipmentDialog from "@/components/equipment/EditEquipment";
 
@@ -81,9 +82,15 @@ export default function OwnerMyEquipmentsPage() {
       try {
         setLoading(true);
         setError("");
+        const token = await getTokenFromClient();
 
         const response = await fetch(
           `${API_URL}/my-equipment?email=${encodeURIComponent(email)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
 
         const result = await response.json();

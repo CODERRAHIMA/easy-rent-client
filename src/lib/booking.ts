@@ -1,4 +1,6 @@
 
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
+
 const API_BASE_URL = "http://localhost:5000";
 
 type CreateBookingPayload = {
@@ -15,12 +17,14 @@ type CreateBookingPayload = {
 
 export async function createBooking(payload: CreateBookingPayload) {
   try {
+    const token = await getTokenFromClient();
     const res = await fetch(
       `${API_BASE_URL}/bookings/create-check-session`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
         cache: "no-store",

@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const API_URL = "http://localhost:5000";
 const PHONE_PATTERN = /^\+?[0-9\s-]{7,15}$/;
@@ -51,7 +52,10 @@ async function requestJson(
   init: RequestInit,
   fallbackMessage: string,
 ): Promise<ApiResult> {
-  const response = await fetch(url, init);
+  const token = await getTokenFromClient();
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${token}`);
+  const response = await fetch(url, { ...init, headers });
 
   const contentType = response.headers.get("content-type");
 

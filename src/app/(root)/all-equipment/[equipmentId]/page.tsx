@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { EquipmentDetails, EquipmentRentalType } from "@/types/type";
 import EquipmentDetailsView from "@/components/equipment/EquipmentDetailsView";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 const EQUIPMENT_API_URL = "http://localhost:5000/equipments";
 
@@ -49,7 +50,11 @@ async function fetchEquipment(
   equipmentId: string,
 ): Promise<{ equipment: EquipmentDetails } | { error: string }> {
   try {
+    const token = await getTokenFromServer();
     const response = await fetch(`${EQUIPMENT_API_URL}/${encodeURIComponent(equipmentId)}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       cache: "no-store",
     });
 

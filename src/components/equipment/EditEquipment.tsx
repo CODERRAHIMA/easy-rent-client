@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const API_URL = "http://localhost:5000/equipments";
 
@@ -85,12 +86,14 @@ export default function EditEquipmentDialog({
     setLoading(true);
 
     try {
+      const token = await getTokenFromClient();
       const response = await fetch(
         `${API_URL}/${item._id}?email=${encodeURIComponent(email)}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             ...formData,

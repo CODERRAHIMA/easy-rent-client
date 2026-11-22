@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Heart, Loader2, MapPin, Wrench } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type { Equipment, EquipmentRentalType } from "@/types/type";
 
 const CURRENCY = "৳";
@@ -25,7 +26,13 @@ const unit: Record<EquipmentRentalType, string> = {
 };
 
 async function getFavourites(email: string, signal: AbortSignal): Promise<Favourite[]> {
-  const response = await fetch(`${API_URL}/favourites?email=${encodeURIComponent(email)}`, { signal });
+  const token = await getTokenFromClient();
+  const response = await fetch(`${API_URL}/favourites?email=${encodeURIComponent(email)}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    signal,
+  });
   const result = await response.json();
 
   if (!response.ok) {
@@ -199,10 +206,16 @@ export default function CustomerFavouritesPage() {
 
       try {
         setRemovingId(equipmentId);
+        const token = await getTokenFromClient();
 
         const response = await fetch(
           `${API_URL}/favourites/${equipmentId}?email=${encodeURIComponent(email)}`,
-          { method: "DELETE" },
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
         const data = await response.json();
 

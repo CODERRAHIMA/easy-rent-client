@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 
 const API_URL = "http://localhost:5000";
@@ -24,8 +25,14 @@ export default function FavouriteButton({
 
     const checkFavourite = async () => {
       try {
+        const token = await getTokenFromClient();
         const response = await fetch(
           `${API_URL}/favourites/status/${equipmentId}?email=${encodeURIComponent(email)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
 
         const result = await response.json();
@@ -50,12 +57,16 @@ export default function FavouriteButton({
 
     try {
       setLoading(true);
+      const token = await getTokenFromClient();
 
       if (isFavourite) {
         const response = await fetch(
           `${API_URL}/favourites/${equipmentId}?email=${encodeURIComponent(email)}`,
           {
             method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
         );
 
@@ -71,6 +82,7 @@ export default function FavouriteButton({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             email,

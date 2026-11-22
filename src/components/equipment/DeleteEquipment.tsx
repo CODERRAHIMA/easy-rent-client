@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type { OwnerEquipment } from "@/types/type";
 
 type DeleteEquipmentProps = {
@@ -37,10 +38,16 @@ export default function DeleteEquipment({
 
     try {
       onError("");
+      const token = await getTokenFromClient();
 
       const response = await fetch(
         `${API_URL}/${equipment._id}?email=${encodeURIComponent(email)}`,
-        { method: "DELETE" },
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       const result = await response.json();
 
