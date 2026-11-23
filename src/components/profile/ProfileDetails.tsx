@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -25,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { uploadImage } from "@/lib/uploadImage";
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}`;
 const PHONE_PATTERN = /^\+?[0-9\s-]{7,15}$/;
@@ -71,19 +73,6 @@ async function requestJson(
 
   return result;
 }
-
-// TODO: imgbb upload (implement later). Returns the uploaded image URL.
-// async function uploadToImgbb(file: File): Promise<string> {
-//   const body = new FormData();
-//   body.append("image", file);
-//   const response = await fetch(
-//     `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
-//     { method: "POST", body },
-//   );
-//   const json = await response.json();
-//   if (!json?.success) throw new Error("Photo upload failed. Please try again.");
-//   return json.data.url as string;
-// }
 
 const getErrorMessage = (err: unknown, fallback: string) =>
   err instanceof Error ? err.message : fallback;
@@ -291,9 +280,8 @@ function ProfileEditor({
     try {
       setSaving(true);
 
-      // TODO: imgbb. Upload the selected `photo` and use the returned URL as `image`:
-      // const image = photo ? await uploadToImgbb(photo) : saved.image;
-      const image = saved.image; // placeholder until imgbb is connected (the selected photo is not saved yet)
+      // Upload selected profile photo to ImgBB
+      const image = photo ? await uploadImage(photo) : saved.image;
 
       await requestJson(
         `${API_URL}/users/profile?email=${encodeURIComponent(user.email)}`,

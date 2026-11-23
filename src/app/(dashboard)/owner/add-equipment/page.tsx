@@ -29,6 +29,7 @@ import {
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { uploadImage } from "@/lib/uploadImage";
 
 const categories = [
   "Construction Equipment",
@@ -103,11 +104,12 @@ export default function OwnerAddequipmentPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
 
   // value can be null with the newer shadcn Select (Base UI), so fall back to ""
   const set = (key: keyof typeof initialForm) => (value: string | null) =>
     setForm((f) => ({ ...f, [key]: value ?? "" }));
+
   const onText =
     (key: keyof typeof initialForm) =>
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -124,28 +126,18 @@ export default function OwnerAddequipmentPage() {
     setPhoto(file);
     setPreview(URL.createObjectURL(file));
   };
+
   const onDrop = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     pickFile(e.dataTransfer.files?.[0]);
   };
 
-  // TODO: imgbb upload (implement later)
-  // const uploadToImgbb = async (file: File): Promise<string> => {
-  //   const body = new FormData();
-  //   body.append("image", file);
-  //   const res = await fetch(
-  //     `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
-  //     { method: "POST", body }
-  //   );
-  //   const json = await res.json();
-  //   if (!json?.success) throw new Error("Image upload failed. Please try again.");
-  //   return json.data.url as string;
-  // };
-
   // Rental terms
   const updateTerm = (i: number, v: string) =>
     setTerms((t) => t.map((x, idx) => (idx === i ? v : x)));
+
   const addTerm = () => setTerms((t) => [...t, ""]);
+
   const removeTerm = (i: number) =>
     setTerms((t) => (t.length === 1 ? [""] : t.filter((_, idx) => idx !== i)));
 
@@ -171,26 +163,32 @@ export default function OwnerAddequipmentPage() {
       [form.rentalType, "Rental type"],
       [form.availableQuantity, "Available quantity"],
     ];
+
     const missing = required.find(([v]) => !v.trim());
     if (missing) return setError(`${missing[1]} is required.`);
+
     if (Number(form.rentalPrice) <= 0)
       return setError("Rental price must be greater than 0.");
+
     if (
       !Number.isInteger(Number(form.availableQuantity)) ||
       Number(form.availableQuantity) < 1
     )
       return setError("Available quantity must be at least 1.");
+
     if (!photo) return setError("Please upload an equipment image.");
+
     const cleanTerms = terms.map((t) => t.trim()).filter(Boolean);
     if (!cleanTerms.length) return setError("Add at least one rental term.");
 
     setLoading(true);
+
     try {
-      // TODO: upload `photo` to imgbb and use the returned URL here:
-      // const image = await uploadToImgbb(photo);
-      const image = ""; 
+      // Upload equipment image to ImgBB
+      const image = await uploadImage(photo);
+
       const now = new Date().toISOString();
-      
+
       const payload = {
         name: form.name.trim(),
         description: form.description.trim(),
@@ -216,14 +214,18 @@ export default function OwnerAddequipmentPage() {
       };
 
       const token = await getTokenFromClient();
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/equipments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/equipments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
 
       if (!response.ok) {
         const detail = await response.text();
@@ -232,7 +234,7 @@ export default function OwnerAddequipmentPage() {
         );
       }
 
-    //   alert("Equipment added! It will go live after admin approval.");
+      // alert("Equipment added! It will go live after admin approval.");
       setForm(initialForm);
       setTerms([""]);
       setPhoto(null);
@@ -282,6 +284,7 @@ export default function OwnerAddequipmentPage() {
                     />
                   </Field>
                 </div>
+
                 <div className="sm:col-span-2">
                   <Field label="Description" htmlFor="description">
                     <Textarea
@@ -294,6 +297,7 @@ export default function OwnerAddequipmentPage() {
                     />
                   </Field>
                 </div>
+
                 <Field label="Category">
                   <Select value={form.category} onValueChange={set("category")}>
                     <SelectTrigger className={triggerCls}>
@@ -308,6 +312,7 @@ export default function OwnerAddequipmentPage() {
                     </SelectContent>
                   </Select>
                 </Field>
+
                 <Field label="Condition">
                   <Select
                     value={form.condition}
@@ -325,6 +330,7 @@ export default function OwnerAddequipmentPage() {
                     </SelectContent>
                   </Select>
                 </Field>
+
                 <Field label="Brand" htmlFor="brand">
                   <Input
                     id="brand"
@@ -334,6 +340,7 @@ export default function OwnerAddequipmentPage() {
                     className={inputCls}
                   />
                 </Field>
+
                 <Field label="Model" htmlFor="model">
                   <Input
                     id="model"
@@ -362,6 +369,7 @@ export default function OwnerAddequipmentPage() {
                     className={inputCls}
                   />
                 </Field>
+
                 <Field label="Rental type">
                   <Select
                     value={form.rentalType}
@@ -379,6 +387,7 @@ export default function OwnerAddequipmentPage() {
                     </SelectContent>
                   </Select>
                 </Field>
+
                 <Field label="Available quantity" htmlFor="availableQuantity">
                   <Input
                     id="availableQuantity"
@@ -390,6 +399,7 @@ export default function OwnerAddequipmentPage() {
                     className={inputCls}
                   />
                 </Field>
+
                 <Field label="Location" htmlFor="location">
                   <Input
                     id="location"
@@ -412,6 +422,7 @@ export default function OwnerAddequipmentPage() {
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#EEF4E0] text-xs font-bold text-[#3F6212]">
                       {i + 1}
                     </span>
+
                     <Input
                       value={t}
                       onChange={(e) => updateTerm(i, e.target.value)}
@@ -419,6 +430,7 @@ export default function OwnerAddequipmentPage() {
                       aria-label={`Rental term ${i + 1}`}
                       className={inputCls}
                     />
+
                     <Button
                       type="button"
                       variant="ghost"
@@ -432,6 +444,7 @@ export default function OwnerAddequipmentPage() {
                   </li>
                 ))}
               </ul>
+
               <Button
                 type="button"
                 variant="outline"
@@ -461,6 +474,7 @@ export default function OwnerAddequipmentPage() {
                       alt="Equipment preview"
                       className="absolute inset-0 h-full w-full object-cover"
                     />
+
                     <span className="absolute inset-x-0 bottom-0 bg-[#1B1F16]/70 py-2 text-xs font-bold text-[#F4F4F2] opacity-0 transition group-hover:opacity-100">
                       Click to change
                     </span>
@@ -470,14 +484,17 @@ export default function OwnerAddequipmentPage() {
                     <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#EEF4E0] text-[#3F6212]">
                       <UploadCloud className="h-6 w-6" aria-hidden />
                     </span>
+
                     <p className="mt-3 text-sm font-bold">
                       Click or drag an image here
                     </p>
+
                     <p className="mt-1 text-xs text-[#1B1F16]/60">
                       JPG or PNG, up to 5 MB
                     </p>
                   </div>
                 )}
+
                 <input
                   id="image"
                   type="file"
@@ -486,6 +503,7 @@ export default function OwnerAddequipmentPage() {
                   className="sr-only"
                 />
               </label>
+
               {photo && (
                 <p className="mt-3 flex items-center gap-2 truncate text-xs text-[#1B1F16]/60">
                   <ImagePlus
@@ -503,6 +521,7 @@ export default function OwnerAddequipmentPage() {
                   className="mt-0.5 h-4 w-4 shrink-0 text-[#7CB518]"
                   aria-hidden
                 />
+
                 <p className="text-sm leading-relaxed text-[#F4F4F2]/75">
                   Your owner details are added automatically from your account.
                   New listings start as{" "}

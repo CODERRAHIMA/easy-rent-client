@@ -7,7 +7,16 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { motion, useReducedMotion } from "framer-motion";
 import { fadeUpVariants } from "@/components/utils/animation";
-import { Eye, EyeOff, Mail, Lock, User, Check, X } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  Check,
+  X,
+  ImagePlus,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,24 +30,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
+import { uploadImage } from "@/lib/uploadImage";
 
 const RegisterPage = () => {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const [password, setPassword] = useState(""); 
+
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [pending, setPending] = useState<"email" | "google" | null>(null);
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageUploading, setImageUploading] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPending("email");
 
     const formData = new FormData(e.currentTarget);
-
-    if (!formData.get("image")) {
-      formData.set("image", "/girlReview.jpg");
-    }
 
     const password = String(formData.get("password") ?? "");
     const confirmPassword = String(formData.get("confirmPassword") ?? "");
@@ -54,9 +64,11 @@ const RegisterPage = () => {
     if (!/[A-Z]/.test(password)) {
       unmetRequirements.push("At least one uppercase letter");
     }
+
     if (!/[a-z]/.test(password)) {
       unmetRequirements.push("At least one lowercase letter");
     }
+
     if (password.length < 6) {
       unmetRequirements.push("At least 6 characters");
     }
@@ -69,14 +81,38 @@ const RegisterPage = () => {
       return;
     }
 
+    // Direct image URL or ImgBB upload
+    let image = String(formData.get("image") ?? "").trim();
+
+    try {
+      if (imageFile) {
+        setImageUploading(true);
+        image = await uploadImage(imageFile);
+      }
+
+      if (!image) {
+        image = "/girlReview.jpg";
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Image upload failed.",
+      );
+      setPending(null);
+      setImageUploading(false);
+      return;
+    } finally {
+      setImageUploading(false);
+    }
+
     const user = {
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
-      image: String(formData.get("image") ?? ""),
+      image,
       password,
     };
 
     let accountCreated = false;
+
     try {
       const { data, error } = await authClient.signUp.email({
         ...user,
@@ -114,7 +150,9 @@ const RegisterPage = () => {
         toast.success("Google Signin Successful.");
       }
     } catch {
-      toast.error("Unable to continue with Google right now. Please try again.");
+      toast.error(
+        "Unable to continue with Google right now. Please try again.",
+      );
     } finally {
       setPending(null);
     }
@@ -130,38 +168,43 @@ const RegisterPage = () => {
       >
         <Card className="overflow-hidden border-neutral-200">
           <CardHeader className="pb-8 text-center">
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-[#7CB518]/10 text-[#7CB518] mb-4">
+            <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#7CB518]/10 text-[#7CB518]">
               <User className="size-5" />
             </div>
+
             <CardTitle className="mb-2">Create an account</CardTitle>
+
             <CardDescription>
               Join Easy Rent and start renting equipment today.
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="">
+          <CardContent>
             <form onSubmit={handleSignUp} className="space-y-5">
               <Button
                 type="button"
                 variant="outline"
-                className="w-full bg-black text-white h-10 cursor-pointer hover:bg-gray-900 hover:text-white"
+                className="h-10 w-full cursor-pointer bg-black text-white hover:bg-gray-900 hover:text-white"
                 onClick={handleGoogleSignIn}
                 disabled={pending !== null}
               >
                 <Image src="/google.png" alt="google" width={14} height={14} />
-                {pending === "google" ? "Connecting..." : "Register with Google"}
+                {pending === "google"
+                  ? "Connecting..."
+                  : "Register with Google"}
               </Button>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center" aria-hidden>
                   <span className="w-full border-t border-border" />
                 </div>
+
                 <div className="relative flex justify-center text-xs uppercase tracking-wider">
                   <span className="bg-card px-3 text-muted-foreground">Or</span>
                 </div>
               </div>
 
-
+              {/* Full Name */}
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -174,27 +217,130 @@ const RegisterPage = () => {
                 />
               </div>
 
+              {/* Profile Image */}
               <div className="space-y-2">
-                <Label htmlFor="image">Profile Image URL</Label>
+                <Label htmlFor="image">Profile Image</Label>
+
                 <Input
                   id="image"
                   name="image"
                   type="url"
                   autoComplete="url"
-                  placeholder="https://unsplash.com/..."
+                  placeholder="https://example.com/image.jpg"
+                  disabled={imageFile !== null}
                 />
+
                 <p className="text-xs text-muted-foreground">
-                  Optional: Leave empty for default avatar
+                  Enter a direct image URL or upload an image using ImgBB.
                 </p>
+
+                {/* <Input
+                  id="imageFile"
+                  name="imageFile"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+
+                    if (file && file.size > 5 * 1024 * 1024) {
+                      toast.error("Image size must be less than 5 MB.");
+                      e.target.value = "";
+                      setImageFile(null);
+                      return;
+                    }
+
+                    setImageFile(file);
+                  }}
+                /> */}
+
+                  {/* Image upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="imageFile" className="text-sm font-semibold">
+                    Profile Image
+                  </Label>
+
+                  <label
+                    htmlFor="imageFile"
+                    className="group relative flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-[#3F6212]/40 bg-[#7CB518]/5 px-4 py-3 transition hover:border-[#3F6212] hover:bg-[#7CB518]/10"
+                  >
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#7CB518]/20 text-[#3F6212] transition group-hover:bg-[#7CB518]/30">
+                        <ImagePlus className="h-5 w-5" aria-hidden />
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-[#1B1F16]">
+                          {imageFile
+                            ? imageFile.name
+                            : "Choose a profile photo"}
+                        </p>
+                        <p className="text-xs text-[#1B1F16]/60">
+                          {imageFile
+                            ? `${(imageFile.size / (1024 * 1024)).toFixed(2)} MB`
+                            : "PNG, JPG or WEBP (max. 5MB)"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="shrink-0 rounded-lg bg-[#5d8518] px-3 py-1.5 text-xs font-medium text-white transition group-hover:bg-[#3F6212]/90">
+                      {imageFile ? "Change" : "Browse"}
+                    </span>
+
+                    <Input
+                      id="imageFile"
+                      name="imageFile"
+                      type="file"
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+
+                        if (file && file.size > 5 * 1024 * 1024) {
+                          toast.error("Image size must be less than 5 MB.");
+                          e.target.value = "";
+                          setImageFile(null);
+                          return;
+                        }
+
+                        setImageFile(file);
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {imageFile && (
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span className="truncate">{imageFile.name}</span>
+
+                    <button
+                      type="button"
+                      className="text-red-500 hover:underline"
+                      onClick={() => {
+                        setImageFile(null);
+
+                        const input = document.getElementById(
+                          "imageFile",
+                        ) as HTMLInputElement | null;
+
+                        if (input) input.value = "";
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
               </div>
 
+              {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
+
                 <div className="relative">
                   <Mail
                     className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
                     aria-hidden
                   />
+
                   <Input
                     id="email"
                     name="email"
@@ -207,17 +353,20 @@ const RegisterPage = () => {
                 </div>
               </div>
 
+              {/* Password */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password" className="text-sm font-semibold">
                     Password
                   </Label>
                 </div>
+
                 <div className="relative">
                   <Lock
                     className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#3F6212]"
                     aria-hidden
                   />
+
                   <Input
                     id="password"
                     name="password"
@@ -229,6 +378,7 @@ const RegisterPage = () => {
                     autoComplete="new-password"
                     className="pl-11 pr-11"
                   />
+
                   <button
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
@@ -285,15 +435,18 @@ const RegisterPage = () => {
                 </ul>
               </div>
 
+              {/* Confirm Password */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                 </div>
+
                 <div className="relative">
                   <Lock
                     className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
                     aria-hidden
                   />
+
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
@@ -303,9 +456,10 @@ const RegisterPage = () => {
                     className="pl-10 pr-10"
                     required
                   />
+
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
                     aria-label={
                       showConfirmPassword ? "Hide password" : "Show password"
                     }
@@ -320,12 +474,17 @@ const RegisterPage = () => {
                 </div>
               </div>
 
+              {/* Submit */}
               <Button
                 type="submit"
-                disabled={pending !== null}
-                className={`w-full h-10 bg-[#7CB518] cursor-pointer text-white font-semibold hover:bg-[#679b16] transition-colors`}
+                disabled={pending !== null || imageUploading}
+                className="h-10 w-full cursor-pointer bg-[#7CB518] font-semibold text-white transition-colors hover:bg-[#679b16]"
               >
-                {pending === "email" ? "Creating account..." : "Create Account"}
+                {imageUploading
+                  ? "Uploading image..."
+                  : pending === "email"
+                    ? "Creating account..."
+                    : "Create Account"}
               </Button>
             </form>
           </CardContent>
@@ -335,7 +494,7 @@ const RegisterPage = () => {
               Already have an account?{" "}
               <Link
                 href="/login"
-                className={`text-[#7CB518] font-semibold hover:underline transition-colors`}
+                className="font-semibold text-[#7CB518] transition-colors hover:underline"
               >
                 Sign in
               </Link>
