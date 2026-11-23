@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, Heart, Loader2, MapPin, Wrench } from "lucide-react";
+import { AlertCircle, Eye, Heart, HeartOff, Loader2, MapPin, Wrench } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type { Equipment, EquipmentRentalType } from "@/types/type";
@@ -42,7 +42,8 @@ async function getFavourites(email: string, signal: AbortSignal): Promise<Favour
   return result.data;
 }
 
-const FavouriteCard = memo(function FavouriteCard({
+/* One table row for one favourite equipment */
+const FavouriteRow = memo(function FavouriteRow({
   equipment,
   removing,
   onRemove,
@@ -54,79 +55,79 @@ const FavouriteCard = memo(function FavouriteCard({
   const equipmentId = String(equipment._id);
 
   return (
-    <li className="group flex h-full flex-col overflow-hidden rounded-3xl border border-[#1B1F16]/10 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-lg">
-      {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#EEF4E0]">
-        {equipment.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={equipment.image}
-            alt={equipment.name}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-[#3F6212]/40">
-            <Wrench className="size-12" aria-hidden />
+    <tr className="border-b border-[#1B1F16]/5 transition last:border-0 hover:bg-[#F4F4F2]/60">
+      {/* Equipment */}
+      <td className="px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="size-12 shrink-0 overflow-hidden rounded-xl bg-[#EEF4E0]">
+            {equipment.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={equipment.image} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-[#3F6212]/50">
+                <Wrench className="size-5" aria-hidden />
+              </div>
+            )}
           </div>
-        )}
+          <p className="line-clamp-1 font-bold">{equipment.name}</p>
+        </div>
+      </td>
 
-        <span className="absolute left-3 top-3 max-w-[65%] truncate rounded-full bg-[#F4F4F2] px-3 py-1 text-xs font-semibold">
-          {equipment.category}
-        </span>
+      <td className="px-5 py-4 text-[#1B1F16]/80">{equipment.category}</td>
 
-        <button
-          type="button"
-          onClick={() => onRemove(equipmentId)}
-          disabled={removing}
-          aria-label={`Remove ${equipment.name} from favourites`}
-          title="Remove from favourites"
-          className="absolute right-3 top-3 flex size-10 items-center justify-center rounded-full bg-white text-red-500 shadow-md transition hover:scale-110 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#3F6212] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {removing ? (
-            <Loader2 className="size-5 animate-spin" aria-hidden />
-          ) : (
-            <Heart className="size-5 fill-red-500" aria-hidden />
-          )}
-        </button>
-      </div>
-
-      {/* Body */}
-      <div className="flex flex-1 flex-col p-5">
-        <h2 className="line-clamp-1 text-lg font-extrabold">{equipment.name}</h2>
-
-        <p className="mt-2 flex items-center gap-2 text-sm text-[#1B1F16]/60">
+      <td className="px-5 py-4">
+        <p className="flex items-center gap-1.5 text-[#1B1F16]/80">
           <MapPin className="size-4 shrink-0 text-[#3F6212]" aria-hidden />
           <span className="truncate">{equipment.location}</span>
         </p>
+      </td>
 
-        <div className="mt-auto pt-5">
-          <p className="text-2xl font-extrabold leading-none">
-            {CURRENCY}
-            {equipment.rentalPrice.toLocaleString()}
-            <span className="ml-1 text-sm font-semibold text-[#1B1F16]/60">
-              / {unit[equipment.rentalType]}
-            </span>
-          </p>
+      <td className="whitespace-nowrap px-5 py-4 font-bold">
+        {CURRENCY}
+        {equipment.rentalPrice.toLocaleString()}
+        <span className="font-normal text-[#1B1F16]/60"> / {unit[equipment.rentalType]}</span>
+      </td>
 
+      {/* Actions: view details, remove favourite */}
+      <td className="px-5 py-4">
+        <div className="flex items-center justify-end gap-2">
           <Link
             href={`/all-equipment/${equipmentId}`}
-            className="mt-4 flex h-11 w-full items-center justify-center rounded-xl bg-[#1B1F16] text-sm font-bold text-white transition hover:bg-[#2d3326] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212]"
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#1B1F16]/10 bg-white px-3 text-xs font-bold text-[#1B1F16]/80 transition hover:border-[#7CB518] hover:text-[#3F6212] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#3F6212]"
           >
+            <Eye className="size-4" aria-hidden />
             View Details
           </Link>
+
+          <button
+            type="button"
+            onClick={() => onRemove(equipmentId)}
+            disabled={removing}
+            aria-label={`Remove ${equipment.name} from favourites`}
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#1B1F16]/10 bg-white px-3 text-xs font-bold text-[#1B1F16]/80 transition hover:border-red-300 hover:bg-red-50 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#3F6212] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {removing ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+            ) : (
+              <HeartOff className="size-4" aria-hidden />
+            )}
+            Remove
+          </button>
         </div>
-      </div>
-    </li>
+      </td>
+    </tr>
   );
 });
 
-function CardsSkeleton() {
+function TableSkeleton() {
   return (
-    <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-label="Loading favourites">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <li key={i} className="h-[380px] animate-pulse rounded-3xl bg-[#1B1F16]/5" />
-      ))}
-    </ul>
+    <div className="rounded-3xl border border-[#1B1F16]/10 bg-white">
+      <ul className="space-y-3 p-5" aria-label="Loading favourites">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <li key={i} className="h-16 animate-pulse rounded-2xl bg-[#1B1F16]/5" />
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -165,7 +166,6 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
     </div>
   );
 }
-
 
 export default function CustomerFavouritesPage() {
   const { data: session, isPending } = useSession();
@@ -243,7 +243,7 @@ export default function CustomerFavouritesPage() {
   if (loading) {
     return (
       <section className="space-y-6">
-        <CardsSkeleton />
+        <TableSkeleton />
       </section>
     );
   }
@@ -277,16 +277,30 @@ export default function CustomerFavouritesPage() {
       ) : favourites.length === 0 ? (
         <EmptyState />
       ) : (
-        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {favourites.map(({ _id, equipment }) => (
-            <FavouriteCard
-              key={_id}
-              equipment={equipment}
-              removing={removingId === String(equipment._id)}
-              onRemove={handleRemove}
-            />
-          ))}
-        </ul>
+        /* Favourites table */
+        <div className="overflow-x-auto rounded-3xl border border-[#1B1F16]/10 bg-white">
+          <table className="w-full min-w-[820px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-[#1B1F16]/10 text-xs uppercase tracking-wider text-[#1B1F16]/50">
+                <th className="px-5 py-4 font-bold">Equipment</th>
+                <th className="px-5 py-4 font-bold">Category</th>
+                <th className="px-5 py-4 font-bold">Location</th>
+                <th className="px-5 py-4 font-bold">Rental price</th>
+                <th className="px-5 py-4 text-right font-bold">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {favourites.map(({ _id, equipment }) => (
+                <FavouriteRow
+                  key={_id}
+                  equipment={equipment}
+                  removing={removingId === String(equipment._id)}
+                  onRemove={handleRemove}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

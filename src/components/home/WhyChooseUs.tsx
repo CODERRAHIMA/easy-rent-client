@@ -31,7 +31,7 @@ export default function WhyChooseUs() {
             We provide reliable, affordable and hassle-free equipment rental for everyone.
           </p>
           <Link
-            href="/#how-it-works"
+            href="#"
             className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#7CB518] px-5 py-3 text-sm font-bold text-[#1B1F16] transition hover:bg-[#6aa00f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7CB518]"
           >
             Learn more <ArrowRight className="h-4 w-4" aria-hidden />
