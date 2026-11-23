@@ -53,24 +53,32 @@ export function DashboardUser({ user }: { user: NavUserData }) {
       router.refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Unable to log out. Please try again.",
+        error instanceof Error
+          ? error.message
+          : "Unable to log out. Please try again.",
       );
     }
   };
 
   const userInfo = (
     <>
-      <Avatar className="h-8 w-8 rounded-lg">
-        <AvatarImage src={user.image || ""} alt={user.name} />
-        <AvatarFallback className="rounded-lg bg-[#7CB518] font-semibold text-white">
-          {user.name.charAt(0).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
+      <div className="relative">
+        <Avatar className="h-9 w-9 rounded-xl border border-[#7CB518]/30 shadow-xs ring-2 ring-[#7CB518]/10 transition-all group-hover/user:ring-[#7CB518]/25">
+          <AvatarImage src={user.image || ""} alt={user.name} />
+          <AvatarFallback className="rounded-xl bg-gradient-to-br from-[#7CB518]/20 to-[#3F6212]/15 font-bold text-[#3F6212]">
+            {user.name.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#7CB518]" />
+      </div>
+
       <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate font-semibold text-slate-900">
+        <span className="truncate font-semibold text-[#1B1F16] transition-colors group-hover/user:text-[#3F6212]">
           {user.name}
         </span>
-        <span className="truncate text-xs text-slate-500">{user.email}</span>
+        <span className="mt-0.5 truncate text-xs text-slate-500">
+          {user.email}
+        </span>
       </div>
     </>
   );
@@ -85,48 +93,71 @@ export function DashboardUser({ user }: { user: NavUserData }) {
               <SidebarMenuButton
                 size="lg"
                 tooltip={user.name}
-                className="cursor-pointer hover:bg-[#7CB518]/10 data-[popup-open]:bg-[#7CB518]/10"
+                className="group/user h-14 cursor-pointer rounded-2xl border border-slate-200/70 bg-white/70 px-2.5 shadow-2xs backdrop-blur-xs transition-all duration-200 hover:border-[#7CB518]/35 hover:bg-[#7CB518]/10 hover:shadow-sm data-[popup-open]:border-[#7CB518]/40 data-[popup-open]:bg-[#7CB518]/10"
               />
             }
           >
             {userInfo}
-            <ChevronsUpDown className="ml-auto size-4 text-slate-500" />
+            <ChevronsUpDown className="ml-auto size-4 text-slate-400 transition-transform duration-200 group-hover/user:text-[#3F6212] group-data-[popup-open]/user:rotate-180" />
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
-            className="min-w-56 rounded-lg"
+            className="min-w-68 rounded-2xl border border-slate-200/80 bg-white/95 p-2 shadow-xl shadow-slate-900/10 backdrop-blur-md"
             side={isMobile ? "bottom" : "right"}
             align="end"
-            sideOffset={8}
+            sideOffset={10}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  {userInfo}
+                <div className="flex items-center gap-3 rounded-xl border border-[#7CB518]/20 bg-gradient-to-br from-[#7CB518]/10 via-[#7CB518]/5 to-transparent p-3">
+                  <Avatar className="h-11 w-11 rounded-xl border border-[#7CB518]/30 shadow-xs">
+                    <AvatarImage src={user.image || ""} alt={user.name} />
+                    <AvatarFallback className="rounded-xl bg-[#7CB518]/20 font-bold text-[#3F6212]">
+                      {user.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="grid min-w-0 flex-1 text-left leading-tight">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate text-sm font-semibold text-[#1B1F16]">
+                        {user.name}
+                      </span>
+                      <span className="shrink-0 rounded-full bg-[#3F6212]/10 px-2 py-0.5 text-[10px] font-semibold capitalize text-[#3F6212]">
+                        {user.role}
+                      </span>
+                    </div>
+                    <span className="mt-1 truncate text-xs text-slate-500">
+                      {user.email}
+                    </span>
+                  </div>
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
 
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="my-2 bg-slate-100" />
 
             <DropdownMenuGroup>
               <DropdownMenuItem
                 render={<Link href={`/${user.role}/profile`} />}
-                className="cursor-pointer gap-2"
+                className="group/item cursor-pointer gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors focus:bg-[#7CB518]/12 focus:text-[#3F6212]"
               >
-                <Settings className="size-4" />
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-500 transition-colors group-focus/item:bg-[#7CB518]/20 group-focus/item:text-[#3F6212]">
+                  <Settings className="size-4" />
+                </span>
                 Profile Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
 
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="my-2 bg-slate-100" />
 
             <DropdownMenuGroup>
               <DropdownMenuItem
                 onClick={handleSignOut}
-                className="cursor-pointer gap-2 text-red-500 focus:bg-red-50 focus:text-red-600"
+                className="group/logout cursor-pointer gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-colors focus:bg-red-50 focus:text-red-700"
               >
-                <LogOut className="size-4" />
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50 text-red-500 transition-colors group-focus/logout:bg-red-100 group-focus/logout:text-red-600">
+                  <LogOut className="size-4" />
+                </span>
                 Log out
               </DropdownMenuItem>
             </DropdownMenuGroup>
