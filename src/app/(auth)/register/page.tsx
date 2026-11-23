@@ -234,25 +234,6 @@ const RegisterPage = () => {
                   Enter a direct image URL or upload an image using ImgBB.
                 </p>
 
-                {/* <Input
-                  id="imageFile"
-                  name="imageFile"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] || null;
-
-                    if (file && file.size > 5 * 1024 * 1024) {
-                      toast.error("Image size must be less than 5 MB.");
-                      e.target.value = "";
-                      setImageFile(null);
-                      return;
-                    }
-
-                    setImageFile(file);
-                  }}
-                /> */}
-
                   {/* Image upload */}
                 <div className="space-y-2">
                   <Label htmlFor="imageFile" className="text-sm font-semibold">
