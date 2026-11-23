@@ -102,7 +102,7 @@ export function DashboardSidebar() {
             priority
           />
           <Image
-            src="/dashboardMiniLogo.png"
+            src="/dashboardMIniLogo.png"
             alt="Easy Rent"
             width={40}
             height={40}
