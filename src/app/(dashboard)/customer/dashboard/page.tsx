@@ -114,7 +114,6 @@ export default function CustomerOverviewPage() {
 
   return (
     <section className="space-y-8 text-[#1B1F16]">
-      {/* Welcome */}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
           Welcome back{firstName ? `, ${firstName}` : ""}

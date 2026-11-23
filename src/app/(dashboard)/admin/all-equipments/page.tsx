@@ -122,7 +122,7 @@ export default function AdminAllEquipmentsPage() {
     <div className="min-h-screen bg-[#F4F4F2] text-[#1B1F16]">
       <div className="mx-auto max-w-7xl">
         {/* Heading */}
-        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">All equipments</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">All Equipments</h1>
         <p className="mt-2 text-sm text-[#1B1F16]/70">
           Review equipment added by owners. Approve it, reject it, update it or delete it.
         </p>

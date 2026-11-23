@@ -37,9 +37,6 @@ const tabs: { value: RentalBookingStatus | "all"; label: string }[] = [
   { value: "cancelled", label: "Cancelled" },
 ];
 
-/* ---------- helpers ---------- */
-
-/** fetch + parse JSON + throw the API message (or the fallback) when the response is not ok */
 async function requestJson(
   url: string,
   init: RequestInit,
@@ -66,7 +63,6 @@ const getDays = (start: string, end: string) =>
 const getValidAmount = (value: unknown): number | null =>
   typeof value === "number" && Number.isFinite(value) ? value : null;
 
-/* ---------- small components ---------- */
 
 function Badge({ label, badge, dot }: RentalBadgeStyle) {
   return (
@@ -102,8 +98,7 @@ const RentalRow = memo(function RentalRow({ rental }: { rental: OwnerRental }) {
           </div>
         </div>
       </td>
-
-      {/* Equipment information */}
+      
       <td className="px-5 py-4">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#EEF4E0]">

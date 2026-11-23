@@ -177,7 +177,7 @@ export default function AdminAllUserPage() {
       <div className="mx-auto max-w-7xl">
         {/* Heading */}
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-          All users
+          Registered Users
         </h1>
         <p className="mt-2 text-sm text-[#1B1F16]/70">
           See every registered user, change their role, or remove accounts.

@@ -9,7 +9,6 @@ import { getTokenFromClient } from "@/lib/getTokenFromClient";
 const CURRENCY = "৳";
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
-// One booking (these are the fields your booking route saves)
 type Rental = {
   _id: string;
   equipmentId: string;
