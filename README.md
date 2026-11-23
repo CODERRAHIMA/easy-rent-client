@@ -1,48 +1,74 @@
 
-# EasyRent
+# EasyRent – Equipment Rental Platform
 
-An equipment rental platform where customers can find and rent equipment, owners can list and manage their equipment, and admins can manage the platform.
+**EasyRent** is a full-stack equipment rental platform where customers can browse and rent equipment, owners can list and manage their equipment, and administrators can manage the entire platform.
 
-## Live URL
+The platform provides a seamless rental experience with secure authentication, role-based access control, equipment management, booking functionality, and online payment processing.
 
-https://easy-rent-client.vercel.app/
+## 🌐 Live Website
 
-## Key Features
+🔗 https://easy-rent-client.vercel.app/
 
-- Browse available equipment, view details, and make rental bookings.
-- Customer dashboard with rental history, favorites, and profile management.
-- Owner dashboard to add, update, and manage equipment and rentals.
-- Admin dashboard to manage users, equipment, and rentals.
-- User authentication with Better Auth.
-- Secure checkout and payment processing with Stripe.
-- Role-based access control for customers, owners, and admins.
+## ✨ Key Features
 
-## Tech Stack
+### 👤 Authentication & Authorization
+- Secure user authentication using Better Auth.
+- Role-based access control for Customers, Owners, and Admins.
+- Protected routes and role-specific dashboards.
 
-### Frontend
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Better Auth
+### 🛒 Customer Features
+- Browse and explore available rental equipment.
+- View detailed equipment information.
+- Book equipment with a secure checkout process.
+- View rental history and booking details.
+- Add equipment to favorites.
+- Manage personal profile information.
 
-### Backend
-- Node.js
-- Express 5
-- MongoDB
-- Stripe
-- JWT Authentication (jose)
-- CORS
-- dotenv
+### 🏪 Owner Features
+- Add new equipment listings.
+- Update and delete existing equipment.
+- Manage listed equipment and availability.
+- View and manage rental bookings.
 
-## NPM Packages
+### 🛡️ Admin Features
+- Manage registered users.
+- Monitor and manage equipment listings.
+- Manage rental bookings across the platform.
+- Maintain overall platform activities.
+
+### 💳 Payment Integration
+- Secure online payment processing with Stripe.
+- Integrated checkout functionality for equipment rentals.
+
+### 🖼️ Image Management
+- Image uploading and hosting using ImgBB.
+- Store and display equipment images through hosted image URLs.
+
+---
+
+## 🛠️ Technology Stack
+
+🎨 Frontend - Next.js | React | TypeScript | Tailwind CSS | Shadcn/ui | Framer Motion
+  
+⚙️ Backend - Node.js | Express 5 | CORS | dotenv | MongoDB | JWT Authentication (jose)
+
+🔐 Authentication - Better Auth
+
+💳 Payment Gateway - Stripe
+
+🖼️ Image Hosting - ImgBB
+
+🚀 Deployment - Vercel
+
+---
+
+## 📦 NPM Packages
 
 ### Frontend Dependencies
 - `@base-ui/react`
 - `@better-auth/mongo-adapter`
 - `better-auth`
 - `class-variance-authority`
-- `cn`
 - `framer-motion`
 - `lucide-react`
 - `mongodb`
@@ -61,6 +87,7 @@ https://easy-rent-client.vercel.app/
 - `jose`
 - `mongodb`
 - `stripe`
+- `imgbb`
 
 ### Development Dependencies
 - `@types/node`
@@ -72,3 +99,17 @@ https://easy-rent-client.vercel.app/
 - `nodemon`
 - `tailwindcss`
 - `typescript`
+
+---
+
+## 🔐 Security
+
+- Better Auth for user authentication.
+- JWT verification using `jose`.
+- Role-based authorization for protected resources.
+- Secure payment processing through Stripe.
+- Environment variables for sensitive configuration.
+
+---
+
+⭐ If you find this project interesting, feel free to explore the repository and share your feedback!
