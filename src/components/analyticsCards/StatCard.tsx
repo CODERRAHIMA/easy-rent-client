@@ -33,8 +33,8 @@ export default function StatCard({
       </span>
 
       <div className="min-w-0">
-        <p className="truncate text-2xl font-extrabold leading-none">{value}</p>
-        <p className={`mt-1.5 truncate text-xs font-medium ${highlight ? "text-white" : "text-[#1B1F16]/60"}`}>
+        <p className="truncate text-sm sm:text-2xl font-extrabold leading-none">{value}</p>
+        <p className={`mt-1.5 truncate text-[10px] sm:text-xs font-medium ${highlight ? "text-white" : "text-[#1B1F16]/60"}`}>
           {label}
         </p>
       </div>
