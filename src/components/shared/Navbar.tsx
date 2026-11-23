@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { signOut, useSession } from "@/lib/auth-client";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Avatar,
   AvatarBadge,
@@ -37,16 +37,19 @@ const baseLinks = [
 const Navbar = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const { data: session, isPending } = useSession();
 
   const handleSignout = async () => {
     try {
       const { data, error } = await signOut();
+
       if (error || !data?.success) {
         toast.error("Unable to sign out. Please try again.");
         return;
       }
+
       toast.success("Signed out successfully.");
       router.push("/");
       router.refresh();
@@ -81,15 +84,34 @@ const Navbar = () => {
 
         {/* Middle links: large screens only */}
         <div className="hidden items-center gap-6 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-semibold text-slate-700 transition-colors hover:text-black"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname === link.href ||
+                  pathname.startsWith(`${link.href}/`);
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={isActive ? "page" : undefined}
+                className={`relative py-2 text-sm font-semibold transition-colors duration-200 ${
+                  isActive
+                    ? "text-[#3F6212]"
+                    : "text-slate-700 hover:text-[#3F6212]"
+                }`}
+              >
+                {link.label}
+
+                <span
+                  className={`absolute bottom-0 left-0 h-[2px] rounded-full bg-[#7CB518] transition-all duration-300 ${
+                    isActive ? "w-full" : "w-0"
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </div>
 
         {isPending ? (
@@ -109,7 +131,7 @@ const Navbar = () => {
               nativeButton={false}
               title={session.user.name ?? undefined}
               render={
-                <div className="group flex cursor-pointer items-center gap-3 rounded-full border border-slate-200 bg-[#282927] py-1.5 px-2 pr-3 transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                <div className="group flex cursor-pointer items-center gap-3 rounded-full border border-slate-200 bg-[#282927] px-2 py-1.5 pr-3 transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                   <div className="relative">
                     <Avatar className="h-10 w-10">
                       <AvatarImage
@@ -120,7 +142,7 @@ const Navbar = () => {
                         {session.user.name?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <AvatarBadge className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500" />
+                    <AvatarBadge className="absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full bg-green-500" />
                   </div>
 
                   <ChevronDown className="h-4 w-4 text-white transition-transform duration-200 group-hover:translate-y-0.5 group-hover:text-white" />
@@ -138,10 +160,12 @@ const Navbar = () => {
                   <PopoverTitle className="text-sm font-bold text-slate-900">
                     {session.user.name}
                   </PopoverTitle>
+
                   <span className="shrink-0 rounded-full border border-[#84b817]/30 bg-[#84b817]/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#5b820b]">
                     {session.user.role}
                   </span>
                 </div>
+
                 <PopoverDescription className="mt-1 break-all text-xs text-slate-500">
                   {session.user.email}
                 </PopoverDescription>
@@ -191,6 +215,7 @@ const Navbar = () => {
               <LogIn className="size-[18px] lg:mr-1 lg:size-[14px]" />
               <span className="hidden lg:inline">Login</span>
             </Link>
+
             <Link
               href="/register"
               aria-label="Register"
