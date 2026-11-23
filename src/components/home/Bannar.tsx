@@ -10,7 +10,7 @@ import {
   fadeUpVariants,
   staggerVariants,
 } from "../utils/animation";
-import { Search, ShieldCheck, CalendarClock, CreditCard } from "lucide-react";
+import { Search, ShieldCheck, CalendarClock, CreditCard, ArrowRight } from "lucide-react";
 
 const trust = [
   { icon: ShieldCheck, text: "Verified equipment owners" },
@@ -109,15 +109,9 @@ const Banner = () => {
           >
             <Link
               href="/all-equipment"
-              className="font-semibold text-[#3F6212] underline-offset-4 hover:underline"
+              className="flex gap-1 items-center font-semibold text-[#3F6212] underline-offset-4 hover:underline"
             >
-              Browse all equipment
-            </Link>
-            <Link
-              href="/register"
-              className="font-semibold text-[#1B1F16]/70 underline-offset-4 hover:underline"
-            >
-              List your equipment
+              Browse all equipment <span><ArrowRight size={18} /></span>
             </Link>
           </motion.div>
 
