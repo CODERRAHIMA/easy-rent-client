@@ -5,8 +5,7 @@ import EquipmentCard from "@/components/equipment/EquipmentCard";
 import FeaturedEquipmentGrid from "@/components/home/FeaturedEquipmentGrid";
 import type { Equipment } from "@/types/type";
 
-const FEATURED_EQUIPMENT_API_URL =
-  `${process.env.NEXT_PUBLIC_API_URL}/equipments/featured`;
+const FEATURED_EQUIPMENT_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/equipments/featured`;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -73,7 +72,9 @@ async function FeaturedEquipment() {
     });
 
     if (!response.ok) {
-      throw new Error(`Unable to load featured equipment (HTTP ${response.status}).`);
+      throw new Error(
+        `Unable to load featured equipment (HTTP ${response.status}).`,
+      );
     }
 
     equipment = getEquipmentList(await response.json());
@@ -107,15 +108,21 @@ async function FeaturedEquipment() {
           </div>
           <Link
             href="/all-equipment"
-            className="inline-flex h-11 w-fit items-center gap-2 rounded-xl border border-[#1B1F16]/15 bg-white px-5 text-sm font-bold transition hover:border-[#7CB518] hover:bg-[#EEF4E0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3F6212]"
+            className="group inline-flex h-12 w-fit items-center gap-3 rounded-xl bg-[#1B1F16] px-6 text-sm font-bold text-white shadow-md shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#344222] hover:shadow-lg hover:shadow-black/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7CB518]"
           >
-            Browse all equipment
-            <ArrowRight className="size-4" aria-hidden="true" />
+            Browse All Equipment
+            <ArrowRight
+              className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+              aria-hidden="true"
+            />
           </Link>
         </div>
 
         {error ? (
-          <p role="alert" className="rounded-2xl bg-white p-6 text-sm text-red-700">
+          <p
+            role="alert"
+            className="rounded-2xl bg-white p-6 text-sm text-red-700"
+          >
             {error}
           </p>
         ) : equipment.length === 0 ? (
@@ -141,4 +148,3 @@ export default function Feature() {
     </Suspense>
   );
 }
-

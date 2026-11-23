@@ -1,3 +1,4 @@
+import DashboardHeaderMenu from "@/components/dashboard/shared/DashBoardHeader";
 import { DashboardSidebar } from "@/components/dashboard/shared/DashBoardSidebar";
 import {
   SidebarInset,
@@ -16,7 +17,9 @@ export default function DashboardLayout({
       <SidebarInset className="bg-[#F4F4F3]">
         <header className="flex h-14 items-center gap-2 border-b border-slate-200 bg-white px-4">
           <SidebarTrigger />
-          {/* <span className="text-sm font-medium">Dashboard</span> */}
+            <div className="ml-auto">
+              <DashboardHeaderMenu/>
+            </div>
         </header>
         <main className="flex-1 p-4 sm:p-6">{children}</main>
       </SidebarInset>

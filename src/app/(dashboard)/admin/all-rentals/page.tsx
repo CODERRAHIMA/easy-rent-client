@@ -48,11 +48,9 @@ const getDays = (start: string, end: string) =>
   Math.max(1, Math.round((+new Date(end) - +new Date(start)) / MS_PER_DAY) + 1);
 
 export default function AdminAllRentalsPage() {
-  // 1. Get the logged in admin
   const { data: session, isPending } = authClient.useSession();
   const email = session?.user?.email;
 
-  // 2. States
   const [rentals, setRentals] = useState<Rental[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -60,7 +58,6 @@ export default function AdminAllRentalsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  // 3. Load all rentals when the page opens
   useEffect(() => {
     const fetchRentals = async () => {
       if (isPending) return;
@@ -93,7 +90,6 @@ export default function AdminAllRentalsPage() {
     fetchRentals();
   }, [email, isPending]);
 
-  // 4. Change the booking status of a rental
   const handleStatusChange = async (rental: Rental, newStatus: string) => {
     try {
       setError("");
@@ -115,7 +111,6 @@ export default function AdminAllRentalsPage() {
         throw new Error(result.message || "Failed to update status");
       }
 
-      // Show the new status on the screen
       setRentals(rentals.map((r) => (r._id === rental._id ? { ...r, bookingStatus: newStatus } : r)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update status");
@@ -124,7 +119,6 @@ export default function AdminAllRentalsPage() {
     }
   };
 
-  // 5. Search + status filter
   const text = search.trim().toLowerCase();
   const filteredRentals = rentals.filter((rental) => {
     const matchesStatus = statusFilter === "all" || rental.bookingStatus === statusFilter;
@@ -137,7 +131,6 @@ export default function AdminAllRentalsPage() {
     return matchesStatus && matchesSearch;
   });
 
-  // 6. Numbers for the cards
   const revenue = rentals
     .filter((r) => r.paymentStatus === "paid")
     .reduce((sum, r) => sum + r.totalAmount, 0);

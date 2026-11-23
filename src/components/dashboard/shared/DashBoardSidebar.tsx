@@ -50,7 +50,11 @@ const roleBasedSidebarItems: Record<DashboardRole, SidebarItem[]> = {
     { label: "Overview", href: "/owner/dashboard", icon: LayoutDashboard },
     { label: "Add Equipment", href: "/owner/add-equipment", icon: PlusCircle },
     { label: "My Equipments", href: "/owner/my-equipment", icon: Package },
-    { label: "My Equipment Rentals", href: "/owner/my-equipment-rentals", icon: ClipboardList },
+    {
+      label: "My Equipment Rentals",
+      href: "/owner/my-equipment-rentals",
+      icon: ClipboardList,
+    },
     { label: "Profile", href: "/owner/profile", icon: User },
   ],
   admin: [
@@ -72,7 +76,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
 
   const { data: session, isPending } = useSession();
-  const user = session?.user; 
+  const user = session?.user;
 
   const activeRole: DashboardRole = (user?.role as DashboardRole) ?? "customer";
 
@@ -133,7 +137,15 @@ export function DashboardSidebar() {
                       render={<Link href={item.href} />}
                       isActive={isActive(item.href)}
                       tooltip={item.label}
-                      className="h-10 rounded-lg px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-[#7CB518]/10 hover:text-[#3F6212] data-[active=true]:bg-[#7CB518] data-[active=true]:text-white data-[active=true]:hover:bg-[#679b16] data-[active=true]:hover:text-white"
+                      style={
+                        isActive(item.href)
+                          ? {
+                              backgroundColor: "#000000",
+                              color: "#ffffff",
+                            }
+                          : undefined
+                      }
+                      className="h-10 rounded-lg px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-[#7CB518]/10 hover:text-[#3F6212]"
                     >
                       <item.icon className="size-[18px]" />
                       <span>{item.label}</span>

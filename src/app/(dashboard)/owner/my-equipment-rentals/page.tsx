@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { CalendarDays, CalendarX2, Wrench } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
@@ -22,12 +22,15 @@ const paymentStyle: Record<RentalPaymentStatus, RentalBadgeStyle> = {
   failed: { label: "Failed", badge: "bg-red-100 text-red-700", dot: "bg-red-500" },
 };
 
-const bookingStyle: Record<RentalBookingStatus, RentalBadgeStyle> = {
-  pending: { label: "Pending", badge: "bg-amber-100 text-amber-800", dot: "bg-amber-500" },
-  confirmed: { label: "Confirmed", badge: "bg-sky-100 text-sky-800", dot: "bg-sky-500" },
-  completed: { label: "Completed", badge: "bg-[#EEF4E0] text-[#3F6212]", dot: "bg-[#7CB518]" },
-  cancelled: { label: "Cancelled", badge: "bg-red-100 text-red-700", dot: "bg-red-500" },
+// Colors for the booking status dropdown
+const bookingColor: Record<RentalBookingStatus, string> = {
+  pending: "border-amber-300 bg-amber-100 text-amber-800",
+  confirmed: "border-sky-300 bg-sky-100 text-sky-800",
+  completed: "border-[#7CB518]/40 bg-[#EEF4E0] text-[#3F6212]",
+  cancelled: "border-red-300 bg-red-100 text-red-700",
 };
+
+const bookingStatuses = Object.keys(bookingColor) as RentalBookingStatus[];
 
 const tabs: { value: RentalBookingStatus | "all"; label: string }[] = [
   { value: "all", label: "All" },
@@ -37,6 +40,7 @@ const tabs: { value: RentalBookingStatus | "all"; label: string }[] = [
   { value: "cancelled", label: "Cancelled" },
 ];
 
+/** fetch + parse JSON + throw the API message (or the fallback) when the response is not ok */
 async function requestJson(
   url: string,
   init: RequestInit,
@@ -63,6 +67,7 @@ const getDays = (start: string, end: string) =>
 const getValidAmount = (value: unknown): number | null =>
   typeof value === "number" && Number.isFinite(value) ? value : null;
 
+/* ---------- small components ---------- */
 
 function Badge({ label, badge, dot }: RentalBadgeStyle) {
   return (
@@ -73,7 +78,15 @@ function Badge({ label, badge, dot }: RentalBadgeStyle) {
   );
 }
 
-const RentalRow = memo(function RentalRow({ rental }: { rental: OwnerRental }) {
+const RentalRow = memo(function RentalRow({
+  rental,
+  updating,
+  onStatusChange,
+}: {
+  rental: OwnerRental;
+  updating: boolean;
+  onStatusChange: (rental: OwnerRental, status: RentalBookingStatus) => void;
+}) {
   const { customer, equipment } = rental;
   const days = getDays(rental.startDate, rental.endDate);
   const totalAmount = getValidAmount(rental.totalAmount);
@@ -98,7 +111,8 @@ const RentalRow = memo(function RentalRow({ rental }: { rental: OwnerRental }) {
           </div>
         </div>
       </td>
-      
+
+      {/* Equipment information */}
       <td className="px-5 py-4">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[#EEF4E0]">
@@ -136,12 +150,28 @@ const RentalRow = memo(function RentalRow({ rental }: { rental: OwnerRental }) {
         {totalAmount === null ? "—" : totalAmount.toLocaleString()}
       </td>
 
+      {/* Payment status */}
       <td className="px-5 py-4">
-        <Badge {...paymentStyle[rental.paymentStatus]} />
+        <Badge {...(paymentStyle[rental.paymentStatus] ?? paymentStyle.pending)} />
       </td>
 
+      {/* Booking status (the owner can change it) */}
       <td className="px-5 py-4">
-        <Badge {...bookingStyle[rental.bookingStatus]} />
+        <select
+          value={rental.bookingStatus}
+          disabled={updating}
+          onChange={(e) => onStatusChange(rental, e.target.value as RentalBookingStatus)}
+          aria-label={`Change booking status of ${equipment.name}`}
+          className={`rounded-full border px-3 py-1.5 text-xs font-bold capitalize disabled:opacity-60 ${
+            bookingColor[rental.bookingStatus] ?? "border-[#1B1F16]/15 bg-white"
+          }`}
+        >
+          {bookingStatuses.map((status) => (
+            <option key={status} value={status} className="bg-white text-[#1B1F16]">
+              {status}
+            </option>
+          ))}
+        </select>
       </td>
     </tr>
   );
@@ -184,6 +214,7 @@ export default function OwnerMyEquipmentRentalsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<RentalBookingStatus | "all">("all");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   // Fetch the rentals of the logged-in owner's equipment once the session is ready
   useEffect(() => {
@@ -224,6 +255,37 @@ export default function OwnerMyEquipmentRentalsPage() {
     return () => controller.abort();
   }, [email, isPending]);
 
+  // Change the booking status of a rental
+  const handleStatusChange = useCallback(
+    async (rental: OwnerRental, newStatus: RentalBookingStatus) => {
+      try {
+        setError("");
+        setUpdatingId(rental._id);
+
+        await requestJson(
+          `${API_URL}/${rental._id}/status`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: newStatus }),
+          },
+          "Failed to update status",
+        );
+
+        // Show the new status on the screen
+        setRentals((prev) =>
+          prev.map((r) => (r._id === rental._id ? { ...r, bookingStatus: newStatus } : r)),
+        );
+      } catch (err) {
+        console.error("Update booking status error:", err);
+        setError(getErrorMessage(err, "Failed to update status"));
+      } finally {
+        setUpdatingId(null);
+      }
+    },
+    [],
+  );
+
   const summary = rentals.reduce(
     (totals, rental) => {
       if (rental.bookingStatus === "confirmed") totals.confirmed += 1;
@@ -257,7 +319,7 @@ export default function OwnerMyEquipmentRentalsPage() {
         <div>
           <h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">My equipment rentals</h1>
           <p className="mt-2 max-w-xl text-sm text-[#1B1F16]/70">
-            See who rented your equipment, for how long, and the payment and booking status.
+            See who rented your equipment, for how long, and manage the payment and booking status.
           </p>
         </div>
 
@@ -314,7 +376,12 @@ export default function OwnerMyEquipmentRentalsPage() {
                 </thead>
                 <tbody>
                   {rows.map((rental) => (
-                    <RentalRow key={rental._id} rental={rental} />
+                    <RentalRow
+                      key={rental._id}
+                      rental={rental}
+                      updating={updatingId === rental._id}
+                      onStatusChange={handleStatusChange}
+                    />
                   ))}
                 </tbody>
               </table>
