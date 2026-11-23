@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect, useState } from "react";
 import { CalendarDays, CalendarX2, Wrench } from "lucide-react";
+import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type {
@@ -276,9 +277,12 @@ export default function OwnerMyEquipmentRentalsPage() {
         setRentals((prev) =>
           prev.map((r) => (r._id === rental._id ? { ...r, bookingStatus: newStatus } : r)),
         );
+        toast.success("Booking status updated.");
       } catch (err) {
         console.error("Update booking status error:", err);
-        setError(getErrorMessage(err, "Failed to update status"));
+        const message = getErrorMessage(err, "Failed to update status");
+        setError(message);
+        toast.error(message);
       } finally {
         setUpdatingId(null);
       }

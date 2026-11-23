@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -79,7 +80,7 @@ export default function EditEquipmentDialog({
     const email = session?.user?.email;
 
     if (!email) {
-      console.log("Please login first");
+      toast.error("Please login first.");
       return;
     }
 
@@ -116,11 +117,12 @@ export default function EditEquipmentDialog({
         availableQuantity: Number(formData.availableQuantity),
       });
 
-      console.log("Equipment updated successfully");
+      toast.success("Equipment updated successfully.");
       onOpenChange(false);
       router.refresh();
     } catch (error) {
-      console.log(
+      console.error("Update equipment error:", error);
+      toast.error(
         error instanceof Error ? error.message : "Something went wrong",
       );
     } finally {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
+import toast from "react-hot-toast";
 import { useSession } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
@@ -51,7 +52,7 @@ export default function FavouriteButton({
   // Toggle favourite
   const handleFavourite = async () => {
     if (!email) {
-      alert("Please login to add favourites");
+      toast.error("Please login to add favourites.");
       return;
     }
 
@@ -77,6 +78,7 @@ export default function FavouriteButton({
         }
 
         setIsFavourite(false);
+        toast.success("Removed from favourites.");
       } else {
         const response = await fetch(`${API_URL}/favourites`, {
           method: "POST",
@@ -97,10 +99,13 @@ export default function FavouriteButton({
         }
 
         setIsFavourite(true);
+        toast.success("Added to favourites.");
       }
     } catch (error) {
       console.error("Favourite update error:", error);
-      alert("Could not update favourite");
+      toast.error(
+        error instanceof Error ? error.message : "Could not update favourite.",
+      );
     } finally {
       setLoading(false);
     }

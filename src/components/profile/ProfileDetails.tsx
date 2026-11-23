@@ -20,6 +20,7 @@ import {
   User,
   type LucideIcon,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -308,9 +309,12 @@ function ProfileEditor({
       setForm(next);
       replacePhoto(null);
       setStatus({ type: "success", text: "Your profile has been updated." }); // replace with a toast if you like
+      toast.success("Your profile has been updated.");
     } catch (err) {
       console.error("Update profile error:", err);
-      fail(getErrorMessage(err, "Something went wrong. Please try again."));
+      const message = getErrorMessage(err, "Something went wrong. Please try again.");
+      fail(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

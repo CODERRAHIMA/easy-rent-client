@@ -3,6 +3,7 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { CalendarClock } from "lucide-react";
+import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -187,14 +188,15 @@ export default function EquipmentBookingDialog({
       const result = await createBooking(bookingData);
 
       if (!result.success) {
-        setBookingError(
-          result.message || "Unable to create booking. Please try again.",
-        );
+        const message = result.message || "Unable to create booking. Please try again.";
+        setBookingError(message);
+        toast.error(message);
         return;
       }
 
       if (!result.url) {
         setBookingError("Stripe checkout URL was not received.");
+        toast.error("Stripe checkout URL was not received.");
         return;
       }
 
@@ -202,9 +204,9 @@ export default function EquipmentBookingDialog({
       window.location.href = result.url;
     } catch (error) {
       console.error("Booking submission error:", error);
-      setBookingError(
-        "Something went wrong. Please try again.",
-      );
+      const message = "Something went wrong. Please try again.";
+      setBookingError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

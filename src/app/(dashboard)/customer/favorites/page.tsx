@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, Eye, Heart, HeartOff, Loader2, MapPin, Wrench } from "lucide-react";
+import toast from "react-hot-toast";
 import { useSession } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import type { Equipment, EquipmentRentalType } from "@/types/type";
@@ -230,9 +231,12 @@ export default function CustomerFavouritesPage() {
             items: previous.items.filter((item) => String(item.equipment._id) !== equipmentId),
           },
         );
+        toast.success("Removed from favourites.");
       } catch (err) {
         console.error("Failed to remove favourite:", err);
-        alert("Could not remove favourite");
+        toast.error(
+          err instanceof Error ? err.message : "Could not remove favourite.",
+        );
       } finally {
         setRemovingId(null);
       }

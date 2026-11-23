@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -113,8 +114,11 @@ export default function AdminAllUserPage() {
       setUsers(
         users.map((u) => (u._id === user._id ? { ...u, role: newRole } : u)),
       );
+      toast.success("User role updated.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to change role");
+      const message = err instanceof Error ? err.message : "Failed to change role";
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -144,8 +148,11 @@ export default function AdminAllUserPage() {
 
       // Remove the user from the list on the screen
       setUsers(users.filter((u) => u._id !== deleteTarget._id));
+      toast.success("User deleted.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete user");
+      const message = err instanceof Error ? err.message : "Failed to delete user";
+      setError(message);
+      toast.error(message);
     } finally {
       setDeleteTarget(null);
     }

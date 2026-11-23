@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import { uploadImage } from "@/lib/uploadImage";
 
@@ -234,18 +235,19 @@ export default function OwnerAddequipmentPage() {
         );
       }
 
-      // alert("Equipment added! It will go live after admin approval.");
       setForm(initialForm);
       setTerms([""]);
       setPhoto(null);
       setPreview(null);
+      toast.success("Equipment submitted for approval.");
       router.push("/owner/my-equipment");
     } catch (err) {
-      setError(
+      const message =
         err instanceof Error
           ? err.message
-          : "Something went wrong. Please try again.",
-      );
+          : "Something went wrong. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

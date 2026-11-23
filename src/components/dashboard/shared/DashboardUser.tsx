@@ -48,6 +48,7 @@ export function DashboardUser({ user }: { user: NavUserData }) {
         return;
       }
 
+      toast.success("Logged out successfully.");
       router.push("/");
       router.refresh();
     } catch (error) {

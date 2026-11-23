@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Pencil, Trash2, Wrench, X } from "lucide-react";
+import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
@@ -96,8 +97,11 @@ export default function AdminAllEquipmentsPage() {
       }
 
       setEquipment(equipment.map((e) => (e._id === item._id ? { ...e, status: newStatus } : e)));
+      toast.success("Equipment status updated.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update status");
+      const message = err instanceof Error ? err.message : "Failed to update status";
+      setError(message);
+      toast.error(message);
     }
   };
 

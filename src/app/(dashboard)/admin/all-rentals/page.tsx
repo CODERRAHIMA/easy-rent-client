@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CalendarDays } from "lucide-react";
+import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
@@ -112,8 +113,11 @@ export default function AdminAllRentalsPage() {
       }
 
       setRentals(rentals.map((r) => (r._id === rental._id ? { ...r, bookingStatus: newStatus } : r)));
+      toast.success("Booking status updated.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update status");
+      const message = err instanceof Error ? err.message : "Failed to update status";
+      setError(message);
+      toast.error(message);
     } finally {
       setUpdatingId(null);
     }

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import toast from "react-hot-toast";
 import type { OwnerEquipment } from "@/types/type";
 
 type DeleteEquipmentProps = {
@@ -56,9 +57,13 @@ export default function DeleteEquipment({
       }
 
       onDeleted(equipment._id);
+      toast.success("Equipment deleted.");
     } catch (error) {
       console.error("Delete equipment error:", error);
-      onError(error instanceof Error ? error.message : "Failed to delete equipment");
+      const message =
+        error instanceof Error ? error.message : "Failed to delete equipment";
+      onError(message);
+      toast.error(message);
     }
   };
 
